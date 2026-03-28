@@ -396,19 +396,54 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <!-- ACTIVACIÓN -->
 <div id="activationOverlay" style="display:none">
   <div style="background:var(--surface);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px">
-    <div style="font-size:32px;margin-bottom:12px">🔑</div>
-    <div style="display:inline-block;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--accent-dim);color:var(--accent2);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px">2SIS · Registro de licencia</div>
-    <h2 style="font-size:1.25rem;font-weight:700;letter-spacing:-.4px;margin-bottom:8px;line-height:1.2">Registrá tu <span style="color:var(--accent2)">licencia personal</span></h2>
-    <p style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:20px">Tu nombre quedará registrado en todos los PDFs que generes. Licencia de <strong style="color:var(--text)">uso personal exclusivo.</strong></p>
-    <div style="margin-bottom:12px">
-      <label style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Nombre completo *</label>
-      <input type="text" id="actNombre" placeholder="Dr. Juan García" style="width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none"/>
+
+    <!-- Vista 1: formulario de registro -->
+    <div id="actForm">
+      <div style="font-size:32px;margin-bottom:12px">🔑</div>
+      <div style="display:inline-block;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--accent-dim);color:var(--accent2);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px">2SIS · Registro de licencia</div>
+      <h2 style="font-size:1.25rem;font-weight:700;letter-spacing:-.4px;margin-bottom:8px;line-height:1.2">Registrá tu <span style="color:var(--accent2)">licencia personal</span></h2>
+      <p style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:20px">Tu nombre quedará registrado en todos los PDFs que generes. Licencia de <strong style="color:var(--text)">uso personal exclusivo.</strong></p>
+      <div style="margin-bottom:12px">
+        <label style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Nombre completo *</label>
+        <input type="text" id="actNombre" placeholder="Dr. Juan García" style="width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none"/>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Email de licencia *</label>
+        <input type="email" id="actEmail" placeholder="doctor@clinica.com" style="width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none"/>
+      </div>
+      <button onclick="activateApp()" id="actBtn" style="width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer">✓ Registrar mi licencia</button>
     </div>
-    <div style="margin-bottom:20px">
-      <label style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Email (opcional)</label>
-      <input type="email" id="actEmail" placeholder="doctor@clinica.com" style="width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none"/>
+
+    <!-- Vista 2: licencia no encontrada -->
+    <div id="actNotFound" style="display:none">
+      <button onclick="showActForm()" style="background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;padding:0;margin-bottom:20px;display:flex;align-items:center;gap:5px">← Volver</button>
+      <div style="text-align:center;padding:16px 0">
+        <div style="font-size:2rem;margin-bottom:8px">🔒</div>
+        <div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:8px">
+          Licencia no encontrada
+        </div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:20px">
+          Este email no tiene una licencia activa de 2SIS.<br>
+          Para adquirirla contactate con nosotros:
+        </div>
+        <a href="https://wa.me/5493865761910?text=Hola%2C%20quiero%20adquirir%202SIS%20Dosis%20Pedi%C3%A1trica"
+           target="_blank"
+           style="display:flex;align-items:center;justify-content:center;gap:10px;
+                  width:100%;padding:14px;background:#25D366;color:#fff;
+                  border-radius:14px;font-weight:700;font-size:.95rem;
+                  text-decoration:none;margin-bottom:10px">
+          <span style="font-size:20px">💬</span> Contactar por WhatsApp
+        </a>
+        <a href="mailto:2sis.contacto@gmail.com?subject=Consulta%20licencia%202SIS&body=Hola%2C%20quiero%20adquirir%202SIS%20Dosis%20Pedi%C3%A1trica"
+           style="display:flex;align-items:center;justify-content:center;gap:10px;
+                  width:100%;padding:14px;background:var(--surface2);color:var(--text);
+                  border:1.5px solid var(--border2);border-radius:14px;
+                  font-weight:700;font-size:.95rem;text-decoration:none">
+          <span style="font-size:20px">✉️</span> Escribir por Email
+        </a>
+      </div>
     </div>
-    <button onclick="activateApp()" style="width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer">✓ Registrar mi licencia</button>
+
   </div>
 </div>
 
@@ -1469,16 +1504,45 @@ function renderTerminosInfo(){
 function getLicensee(){try{return JSON.parse(localStorage.getItem(LK)||'{}');}catch(e){return {};}}
 window.getLicensee=getLicensee;
 
+// Lista de emails con licencia activa — agregar emails de compradores aquí
+const LICENSED_EMAILS=[
+  // 'doctor@ejemplo.com',
+];
+
+function checkLicense(email){
+  if(!email) return {valid:false};
+  const normalized=email.trim().toLowerCase();
+  const valid=LICENSED_EMAILS.map(e=>e.toLowerCase()).includes(normalized);
+  return {valid};
+}
+
+window.showActForm=function(){
+  document.getElementById('actNotFound').style.display='none';
+  document.getElementById('actForm').style.display='block';
+};
+
 window.activateApp=function(){
   const nombre=document.getElementById('actNombre').value.trim();
   if(!nombre){document.getElementById('actNombre').style.borderColor='var(--red)';document.getElementById('actNombre').focus();return;}
   const email=document.getElementById('actEmail').value.trim();
-  localStorage.setItem(LK,JSON.stringify({nombre,email,fecha:new Date().toISOString()}));
-  localStorage.removeItem(OBK);
-  document.getElementById('activationOverlay').style.display='none';
-  init();
-  const ob=document.getElementById('onboarding');ob.style.display='flex';ob.classList.remove('ob-hidden');
-  obCur=0;obInit();
+  if(!email){document.getElementById('actEmail').style.borderColor='var(--red)';document.getElementById('actEmail').focus();return;}
+  const btn=document.getElementById('actBtn');
+  btn.textContent='Verificando...';btn.disabled=true;
+  setTimeout(()=>{
+    const result=checkLicense(email);
+    if(!result.valid){
+      btn.textContent='✓ Registrar mi licencia';btn.disabled=false;
+      document.getElementById('actForm').style.display='none';
+      document.getElementById('actNotFound').style.display='block';
+      return;
+    }
+    localStorage.setItem(LK,JSON.stringify({nombre,email,fecha:new Date().toISOString()}));
+    localStorage.removeItem(OBK);
+    document.getElementById('activationOverlay').style.display='none';
+    init();
+    const ob=document.getElementById('onboarding');ob.style.display='flex';ob.classList.remove('ob-hidden');
+    obCur=0;obInit();
+  },600);
 };
 
 /* ══ LOGO ══ */

@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>2SIS · Dosis Pediátrica</title>
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#7c6cff"/>
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="2SIS" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f13;--surface:#1a1a24;--surface2:#22222f;--surface3:#2a2a3a;
+  --border:#2e2e3f;--border2:#3a3a50;--text:#f0eff8;--muted:#7b7a94;--muted2:#4a4a62;
+  --accent:#7c6cff;--accent2:#a99dff;--accent-dim:rgba(124,108,255,.15);
+  --green:#22d3a5;--green-dim:rgba(34,211,165,.12);--green-border:rgba(34,211,165,.3);
+  --amber:#f5a623;--amber-dim:rgba(245,166,35,.13);--amber-border:rgba(245,166,35,.3);
+  --red:#ff5a5a;--red-dim:rgba(255,90,90,.12);--red-border:rgba(255,90,90,.3);
+  --blue:#3b82f6;--blue-dim:rgba(59,130,246,.13);
+  --radius:14px;--radius-sm:8px;--radius-xs:6px;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding-bottom:80px}
+header{padding:18px 20px 0;position:sticky;top:0;z-index:50;background:var(--bg)}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#7c6cff,#22d3a5);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.logo-text h1{font-size:1.05rem;font-weight:700;letter-spacing:-.4px}
+.logo-text span{color:var(--muted);font-size:.78rem}
+.hdr-actions{display:flex;gap:8px}
+.icon-btn{width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:background .15s}
+.icon-btn:active{background:var(--surface3)}
+.tab-bar{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:4px;margin-bottom:14px}
+.tab-btn{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:600;padding:8px 2px;border-radius:10px;cursor:pointer;transition:all .2s;text-align:center;line-height:1.2}
+.tab-btn.active{background:var(--accent);color:#fff}
+.content{padding:0 20px;flex:1}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.card-title{font-size:.88rem;font-weight:700;letter-spacing:-.2px}
+.card-badge{margin-left:auto;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-dim);color:var(--accent2)}
+.field{margin-bottom:12px}
+.field label{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+input[type="text"],input[type="number"],input[type="email"],input[type="date"],select,textarea{width:100%;padding:11px 13px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.9rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+input::placeholder{color:var(--muted2)}
+input[type="date"]{color-scheme:dark}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237b7a94' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.peso-input-wrap{position:relative}
+.peso-input-wrap input{font-size:1.8rem;font-weight:700;font-family:'DM Mono',monospace;text-align:center;padding:16px;letter-spacing:-.5px;background:var(--surface2);border:2px solid var(--border);border-radius:var(--radius-sm)}
+.peso-input-wrap input:focus{border-color:var(--accent)}
+.peso-unit{position:absolute;right:14px;bottom:12px;font-size:.75rem;font-weight:600;color:var(--muted);pointer-events:none}
+.edad-calc{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--green-dim);border:1px solid var(--green-border);border-radius:var(--radius-xs);margin-top:6px;font-size:.78rem;color:var(--green);font-weight:600}
+.search-wrap{position:relative;margin-bottom:10px}
+.search-wrap input{padding-left:36px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted2);pointer-events:none}
+.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:var(--surface3);border:none;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-family:'DM Sans',sans-serif}
+.search-clear.show{display:flex}
+.cat-scroll{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:2px;margin-bottom:10px}
+.cat-pill{padding:5px 12px;border-radius:999px;font-size:.72rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:var(--surface2);color:var(--muted);transition:all .15s;white-space:nowrap}
+.cat-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.drug-list{display:flex;flex-direction:column;gap:8px}
+.drug-row{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+.drug-row:hover,.drug-row.active{border-color:var(--accent);background:var(--accent-dim)}
+.drug-icon{font-size:20px;flex-shrink:0;width:32px;text-align:center}
+.drug-body{flex:1;min-width:0}
+.drug-name{font-size:.9rem;font-weight:700;margin-bottom:1px}
+.drug-sub{font-size:.72rem;color:var(--muted);line-height:1.4}
+.drug-tag{flex-shrink:0;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:999px}
+.tag-ab{background:var(--amber-dim);color:var(--amber)}
+.tag-an{background:var(--accent-dim);color:var(--accent2)}
+.tag-ot{background:var(--green-dim);color:var(--green)}
+.tag-rc{background:var(--red-dim);color:var(--red)}
+.tag-av{background:var(--blue-dim);color:var(--blue)}
+.drug-row.selected{border-color:var(--accent);background:var(--accent-dim)}
+.drug-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);background:var(--surface3);color:transparent;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.drug-row.selected .drug-check{background:var(--accent);border-color:var(--accent);color:#fff}
+.sel-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:var(--radius-sm);margin-bottom:10px}
+.sel-bar-info{font-size:.78rem;font-weight:600;color:var(--accent2)}
+.sel-bar-actions{display:flex;gap:6px}
+.sel-bar-btn{font-size:.72rem;color:var(--muted);cursor:pointer;padding:3px 9px;border-radius:999px;border:1px solid var(--border2);background:var(--surface2);font-weight:600}
+.sel-bar-btn.primary{color:var(--accent2);border-color:var(--accent);background:var(--accent-dim)}
+.result-drug-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden}
+.result-drug-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;background:var(--accent-dim);border-bottom:1px solid var(--border)}
+.result-drug-hdr-name{font-size:.92rem;font-weight:700;color:var(--accent2);display:flex;align-items:center;gap:7px}
+.result-drug-hdr-remove{font-size:17px;cursor:pointer;color:var(--muted2);line-height:1;padding:2px 6px;border-radius:4px;transition:color .15s}
+.result-drug-hdr-remove:hover{color:var(--red)}
+.result-drug-body{padding:14px 15px;display:flex;flex-direction:column;gap:10px}
+.dose-block{display:flex;flex-direction:column;gap:4px}
+.dose-main{display:flex;align-items:baseline;gap:5px}
+.dose-num{font-size:2rem;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-1px;line-height:1}
+.dose-unit{font-size:.82rem;color:var(--muted);font-weight:500}
+.dose-meta{font-size:.72rem;color:var(--muted);line-height:1.5}
+.result-hero{background:linear-gradient(135deg,var(--surface) 0%,#1a1a30 100%);border:1px solid var(--accent);border-radius:var(--radius);padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.result-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:var(--accent-dim);border-radius:50%;pointer-events:none}
+.result-drug-name{font-size:1rem;font-weight:700;color:var(--accent2);margin-bottom:4px}
+.result-dosis-num{font-size:2.4rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);letter-spacing:-1px;line-height:1}
+.result-dosis-unit{font-size:.85rem;color:var(--muted);font-weight:500;margin-left:4px}
+.result-meta{font-size:.75rem;color:var(--muted);margin-top:6px;line-height:1.6}
+.result-freq{display:inline-block;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--green-dim);color:var(--green);margin-top:6px}
+.result-warn{background:var(--amber-dim);border:1px solid var(--amber-border);border-radius:var(--radius-xs);padding:9px 12px;font-size:.75rem;color:var(--amber);margin-top:10px;line-height:1.55}
+.result-max{background:var(--red-dim);border:1px solid var(--red-border);border-radius:var(--radius-xs);padding:8px 12px;font-size:.75rem;color:var(--red);margin-top:8px;font-weight:500}
+.edad-warn{background:var(--red-dim);border:1px solid var(--red-border);border-radius:var(--radius-xs);padding:9px 12px;font-size:.75rem;color:var(--red);margin-top:8px;font-weight:600;line-height:1.5}
+.pres-list{display:flex;flex-direction:column;gap:7px}
+.pres-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:10px}
+.pres-icon{font-size:18px;flex-shrink:0}
+.pres-body{flex:1;min-width:0}
+.pres-name{font-size:.84rem;font-weight:600;margin-bottom:1px}
+.pres-conc{font-size:.72rem;color:var(--muted)}
+.pres-calc{font-size:.82rem;font-weight:700;color:var(--green);flex-shrink:0;text-align:right}
+.revision-tag{display:inline-flex;align-items:center;gap:5px;font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);margin-top:6px}
+.hist-item{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:7px}
+.hist-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.hist-body{flex:1;min-width:0}
+.hist-title{font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-sub{font-size:.7rem;color:var(--muted);font-family:'DM Mono',monospace}
+.hist-actions{display:flex;gap:4px}
+.hist-btn{width:26px;height:26px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px}
+.btn-primary{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s,transform .1s;margin-top:6px}
+.btn-primary:active{opacity:.85;transform:scale(.98)}
+.btn-primary.loading{opacity:.6;pointer-events:none}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-secondary{width:100%;padding:11px;background:var(--surface2);color:var(--text);border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;margin-top:8px}
+.btn-secondary:active{background:var(--surface3)}
+.pdf-toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;margin-top:10px}
+.pdf-toggle-label{font-size:.82rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px}
+.pdf-toggle-label span{font-size:.72rem;color:var(--muted);font-weight:400}
+.toggle-switch{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--border2);border-radius:999px;cursor:pointer;transition:background .2s}
+.toggle-switch input:checked+.toggle-track{background:var(--accent)}
+.toggle-track::after{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle-switch input:checked+.toggle-track::after{transform:translateX(18px)}
+.logo-upload-area{border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:12px;text-align:center;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden}
+.logo-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.logo-preview-img{max-width:100%;max-height:52px;object-fit:contain;display:none;margin:0 auto}
+.logo-upload-lbl{font-size:.78rem;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px}
+.logo-clear{position:absolute;top:5px;right:5px;width:20px;height:20px;background:var(--red-dim);border:none;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--red);font-size:11px;z-index:2}
+.empty-state{text-align:center;padding:36px 16px;color:var(--muted)}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.disclaimer{background:var(--amber-dim);border:1px solid var(--amber-border);border-radius:var(--radius-xs);padding:10px 13px;font-size:.72rem;color:var(--amber);line-height:1.55;margin-bottom:12px}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 18px;font-size:.88rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap;display:flex;align-items:center;gap:8px}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* TERMS OVERLAY */
+#termsOverlay{position:fixed;inset:0;background:rgba(0,0,0,.95);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:flex-end;justify-content:center}
+.terms-sheet{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:95vh;display:flex;flex-direction:column}
+.terms-header{padding:20px 24px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.terms-body{flex:1;overflow-y:auto;padding:16px 24px;font-size:.78rem;color:var(--muted);line-height:1.75;-webkit-overflow-scrolling:touch}
+.terms-body h3{font-size:.85rem;font-weight:700;color:var(--text);margin:14px 0 6px}
+.terms-body h3:first-child{margin-top:0}
+.terms-body strong{color:var(--text);font-weight:600}
+.terms-scroll-hint{text-align:center;font-size:.7rem;color:var(--muted2);padding:8px;flex-shrink:0;border-top:1px solid var(--border)}
+.terms-footer{padding:16px 24px 28px;border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+.terms-checkbox{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.terms-checkbox input[type="checkbox"]{width:18px;height:18px;border-radius:4px;accent-color:var(--accent);flex-shrink:0;margin-top:2px;cursor:pointer}
+.terms-checkbox-text{font-size:.76rem;color:var(--text);line-height:1.5}
+/* ACTIVATION */
+#activationOverlay{position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:flex-end;justify-content:center}
+/* ONBOARDING */
+#onboarding{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:flex-end;justify-content:center;transition:opacity .4s}
+#onboarding.ob-hidden{opacity:0;pointer-events:none}
+.ob-sheet{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(0);transition:transform .35s cubic-bezier(.22,.61,.36,1)}
+#onboarding.ob-hidden .ob-sheet{transform:translateY(100%)}
+.ob-progress{height:3px;background:var(--border);flex-shrink:0}
+.ob-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .4s cubic-bezier(.22,.61,.36,1)}
+.ob-slides{flex:1;overflow:hidden;position:relative;min-height:0}
+.ob-slide{padding:26px 22px 16px;display:none;flex-direction:column;overflow-y:auto;height:100%}
+.ob-slide.active{display:flex}
+.ob-emoji{font-size:42px;margin-bottom:12px;line-height:1}
+.ob-tag{display:inline-block;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--accent-dim);color:var(--accent2);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px}
+.ob-title{font-size:1.35rem;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:10px}
+.ob-title span{color:var(--accent2)}
+.ob-body{font-size:.86rem;color:var(--muted);line-height:1.65;margin-bottom:16px}
+.ob-body strong{color:var(--text);font-weight:600}
+.ob-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.ob-card{display:flex;align-items:flex-start;gap:12px;padding:11px 13px;border-radius:10px;border:1px solid}
+.ob-card--green{background:var(--green-dim);border-color:var(--green-border)}
+.ob-card--amber{background:var(--amber-dim);border-color:var(--amber-border)}
+.ob-card--neutral{background:var(--surface2);border-color:var(--border2)}
+.ob-card-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.ob-card-title{font-size:.8rem;font-weight:700;margin-bottom:2px}
+.ob-card--green .ob-card-title{color:var(--green)}
+.ob-card--amber .ob-card-title{color:var(--amber)}
+.ob-card--neutral .ob-card-title{color:var(--text)}
+.ob-card-text{font-size:.73rem;color:var(--muted);line-height:1.5}
+.ob-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.ob-step{display:flex;align-items:flex-start;gap:12px}
+.ob-step-num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ob-step-title{font-size:.84rem;font-weight:600;margin-bottom:2px}
+.ob-step-text{font-size:.73rem;color:var(--muted);line-height:1.5}
+.ob-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.ob-pill{padding:5px 11px;border-radius:999px;font-size:.73rem;font-weight:600}
+.ob-pill--green{background:var(--green-dim);color:var(--green)}
+.ob-pill--amber{background:var(--amber-dim);color:var(--amber)}
+.ob-pill--purple{background:var(--accent-dim);color:var(--accent2)}
+.ob-pill--neutral{background:var(--surface2);color:var(--muted);border:1px solid var(--border2)}
+.ob-footer{padding:14px 22px 26px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--border);flex-shrink:0}
+.ob-dots{display:flex;gap:6px;flex:1}
+.ob-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);transition:all .25s;cursor:pointer}
+.ob-dot.active{width:18px;background:var(--accent)}
+.ob-skip{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;padding:4px 0;white-space:nowrap}
+.ob-next{padding:11px 20px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .15s,transform .1s}
+.ob-next:active{opacity:.85;transform:scale(.97)}
+.ob-next.ob-finish{background:var(--green)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">💊</div>
+        <div class="logo-text">
+          <h1>2SIS</h1>
+          <span id="headerSub">Calculadora clínica pediátrica</span>
+        </div>
+      </div>
+      <div class="hdr-actions">
+        <div class="icon-btn" onclick="switchTab('historial')" title="Historial">📋</div>
+        <div class="icon-btn" onclick="switchTab('config')" title="Config">⚙️</div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="paciente" onclick="switchTab('paciente')">👶 Paciente</button>
+      <button class="tab-btn" data-tab="farmacos" onclick="switchTab('farmacos')">💊 Fármacos</button>
+      <button class="tab-btn" data-tab="resultado" onclick="switchTab('resultado')">📊 Resultado</button>
+      <button class="tab-btn" data-tab="historial" onclick="switchTab('historial')">📋 Historial</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- PACIENTE -->
+    <div class="panel active" id="panel-paciente">
+      <div class="card">
+        <div class="card-header"><span>👶</span><span class="card-title">Datos del Paciente</span></div>
+        <div class="field"><label>Nombre del niño/a</label>
+          <input type="text" id="pNombre" placeholder="Opcional — para el PDF" oninput="autosave()"/>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Fecha de nacimiento</label>
+            <input type="date" id="pFechaNac" onchange="calcularEdad();autosave()"/>
+          </div>
+          <div class="field"><label>Sexo</label>
+            <select id="pSexo" onchange="autosave()">
+              <option value="">— opcional —</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+            </select>
+          </div>
+        </div>
+        <div id="edadCalcBox" class="edad-calc" style="display:none">📅 <span id="edadCalcText"></span></div>
+        <div class="field" style="margin-top:10px"><label>Edad (texto libre)</label>
+          <input type="text" id="pEdad" placeholder="Ej: 3 años 8 meses" oninput="autosave()"/>
+        </div>
+        <div class="field"><label>Peso corporal *</label>
+          <div class="peso-input-wrap">
+            <input type="number" id="pPeso" placeholder="12.5" step="0.1" min="0.5" max="80" oninput="autosave();recalcActivo()"/>
+            <span class="peso-unit">kg</span>
+          </div>
+        </div>
+        <div id="pesoWarning" style="display:none;font-size:.75rem;color:var(--amber);margin-top:6px;padding:8px 10px;background:var(--amber-dim);border-radius:var(--radius-xs)"></div>
+      </div>
+      <button class="btn-primary" onclick="switchTab('farmacos')">Seleccionar fármaco →</button>
+    </div>
+
+    <!-- FÁRMACOS -->
+    <div class="panel" id="panel-farmacos">
+      <div class="disclaimer">⚕️ <strong>Uso exclusivo para profesionales médicos.</strong> Dosis de referencia para orientación clínica. Verificar siempre con bibliografía actualizada y ajustar según el caso.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:.78rem;font-weight:600;color:var(--muted)">Modo de selección</span>
+        <button id="btnModoMulti" onclick="toggleModoMulti()" style="font-size:.72rem;font-weight:600;padding:5px 14px;border-radius:999px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .15s">☐ Selección múltiple</button>
+      </div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar fármaco..." oninput="filterDrugs()"/>
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+      </div>
+      <div class="cat-scroll" id="catScroll"></div>
+      <div class="drug-list" id="drugList"></div>
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="panel" id="panel-resultado">
+      <div id="resultContent">
+        <div class="empty-state"><div class="empty-icon">💊</div><p>Ingresá el peso del paciente y seleccioná un fármaco para ver la dosis calculada.</p></div>
+      </div>
+    </div>
+
+    <!-- HISTORIAL -->
+    <div class="panel" id="panel-historial">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:.88rem;font-weight:700">Consultas recientes</span>
+        <span id="histCount" style="font-size:.75rem;color:var(--muted)">0 registros</span>
+      </div>
+      <div id="historialList"></div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="panel" id="panel-config">
+      <div class="card">
+        <div class="card-header"><span>🏥</span><span class="card-title">Datos del Médico (PDF)</span></div>
+        <div class="field"><label>Logo del consultorio</label>
+          <div class="logo-upload-area" id="logoArea">
+            <input type="file" accept="image/*" id="logoInput" onchange="handleLogo(event)"/>
+            <img id="logoImg" class="logo-preview-img"/>
+            <div class="logo-upload-lbl" id="logoLbl"><span style="font-size:20px">🖼️</span><span>Subir logo · PNG/JPG · máx 2MB</span></div>
+            <button class="logo-clear" id="logoClr" onclick="clearLogo(event)">✕</button>
+          </div>
+        </div>
+        <div class="field"><label>Nombre del médico</label>
+          <input type="text" id="cfgNombre" placeholder="Dr. María García" oninput="saveState()"/>
+        </div>
+        <div class="field"><label>Especialidad / Matrícula</label>
+          <input type="text" id="cfgEsp" placeholder="Pediatra · M.P. 23456" oninput="saveState()"/>
+        </div>
+        <div class="field"><label>Teléfono / Consultorio</label>
+          <input type="text" id="cfgTel" placeholder="Av. Siempreviva 742 · Tel: 011 4000-0000" oninput="saveState()"/>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span>📚</span><span class="card-title">Bibliografía utilizada</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="biblioList"></div>
+        <div style="margin-top:12px;padding:9px 11px;background:var(--amber-dim);border-radius:var(--radius-xs);border:1px solid var(--amber-border);font-size:.7rem;color:var(--amber);line-height:1.5">
+          ⚕️ Las dosis son rangos de referencia según bibliografía pediátrica estándar. El médico prescriptor es siempre responsable de la indicación final ajustada a cada paciente individual.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span>⚖️</span><span class="card-title">Términos de uso</span></div>
+        <button class="btn-secondary" onclick="verTerminos()">📄 Ver términos aceptados</button>
+        <div id="terminosInfo" style="margin-top:8px;font-size:.7rem;color:var(--muted);line-height:1.6"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span>❓</span><span class="card-title">Ayuda</span></div>
+        <button class="btn-secondary" onclick="showOnboarding()">📖 Ver guía de uso</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><span>🗑️</span><span class="card-title">Datos</span></div>
+        <button class="btn-secondary" onclick="limpiarHistorial()">Limpiar historial</button>
+        <button class="btn-secondary" style="color:var(--red);border-color:var(--red-border);margin-top:8px" onclick="clearAll()">Borrar todos los datos</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TERMS OVERLAY -->
+<div id="termsOverlay" style="display:none">
+  <div class="terms-sheet">
+    <div class="terms-header">
+      <div style="font-size:.65rem;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--accent-dim);color:var(--accent2);letter-spacing:.4px;text-transform:uppercase;display:inline-block;margin-bottom:8px">2SIS · Términos de uso · v1.0</div>
+      <div style="font-size:1.1rem;font-weight:700;letter-spacing:-.3px">Leé hasta el final para continuar</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Scroll obligatorio antes de aceptar</div>
+    </div>
+    <div class="terms-body" id="termsBody" onscroll="checkTermsScroll()">
+      <h3>1. Naturaleza de la herramienta</h3>
+      <p><strong>2SIS es una herramienta de referencia bibliográfica para profesionales de la salud.</strong> No es un dispositivo médico certificado, no reemplaza el criterio clínico del profesional, y no constituye una prescripción médica autónoma. Las dosis presentadas son rangos orientativos extraídos de bibliografía pediátrica estándar internacionalmente reconocida (Nelson Textbook of Pediatrics 21ª ed., Pediatric Dosage Handbook Lexicomp 30ª ed., BNF for Children 2023-2024, AAP Red Book 2021-2024, WHO Model Formulary for Children, SAP Guías 2020-2022, ANMAT Vademécum Nacional 2023).</p>
+      <h3>2. Responsabilidad del profesional</h3>
+      <p><strong>El médico prescriptor es el único responsable de la indicación terapéutica final.</strong> Toda prescripción debe ser ajustada por el profesional según: el caso clínico individual del paciente, las condiciones comórbidas, las interacciones medicamentosas, la función renal y hepática, el peso y edad exactos, y la bibliografía clínica actualizada disponible al momento de la prescripción.</p>
+      <h3>3. Limitaciones técnicas</h3>
+      <p>Las dosis presentadas son calculadas automáticamente a partir de los rangos bibliográficos ingresados en la base de datos. <strong>El profesional debe verificar siempre el resultado antes de prescribir.</strong> 2SIS no detecta interacciones medicamentosas, alergias, contraindicaciones absolutas no explicitadas en la DB, ni condiciones especiales del paciente no contempladas en los campos disponibles.</p>
+      <h3>4. Uso personal y licencia</h3>
+      <p>Esta licencia es de <strong>uso personal exclusivo</strong> para el profesional médico registrado. Está prohibida la redistribución, cesión, venta o transferencia del acceso a terceros. El nombre del licenciatario queda registrado en todos los documentos PDF generados. La redistribución del acceso con fines comerciales o gratuitos constituye una violación de los presentes términos.</p>
+      <h3>5. Marco legal</h3>
+      <p>La aceptación de estos términos constituye un acuerdo vinculante válido bajo la legislación argentina, incluyendo la Ley 25.506 de Firma Digital y concordantes. El registro de aceptación (nombre, fecha, versión de términos) queda guardado localmente como evidencia del consentimiento informado.</p>
+      <h3>6. Actualizaciones</h3>
+      <p>Apache90 se reserva el derecho de actualizar la base de datos de fármacos y los presentes términos. Las actualizaciones de la base de datos se realizan periódicamente a partir de las fuentes bibliográficas citadas. Versión actual de los términos: <strong>1.0 — Marzo 2026</strong>.</p>
+      <div style="margin-top:20px;padding:10px 12px;background:var(--accent-dim);border-radius:var(--radius-xs);border-left:2px solid var(--accent);font-size:.72rem;color:var(--muted);line-height:1.6">
+        Al aceptar estos términos, el profesional declara haber leído, comprendido y aceptado todas las condiciones expuestas. Esta aceptación queda registrada con fecha, nombre completo y versión del documento.
+      </div>
+    </div>
+    <div class="terms-scroll-hint" id="termsHint">↓ Continuá leyendo para habilitar la aceptación</div>
+    <div class="terms-footer" id="termsFooter" style="display:none">
+      <label class="terms-checkbox">
+        <input type="checkbox" id="chk1" onchange="checkBothChecked()"/>
+        <span class="terms-checkbox-text">Soy profesional de la salud con matrícula habilitante y acepto usar esta herramienta exclusivamente como apoyo bibliográfico, bajo mi propio criterio clínico y responsabilidad profesional.</span>
+      </label>
+      <label class="terms-checkbox">
+        <input type="checkbox" id="chk2" onchange="checkBothChecked()"/>
+        <span class="terms-checkbox-text">Entiendo que 2SIS no es un dispositivo médico certificado, no reemplaza mi responsabilidad de verificar las dosis con bibliografía actualizada, y que el médico prescriptor es siempre el único responsable de la indicación final.</span>
+      </label>
+      <button class="btn-primary" id="btnAceptarTerminos" disabled onclick="aceptarTerminos()">Acepto los términos — continuar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIVACIÓN -->
+<div id="activationOverlay" style="display:none">
+  <div style="background:var(--surface);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px">
+    <div style="font-size:32px;margin-bottom:12px">🔑</div>
+    <div style="display:inline-block;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--accent-dim);color:var(--accent2);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px">2SIS · Registro de licencia</div>
+    <h2 style="font-size:1.25rem;font-weight:700;letter-spacing:-.4px;margin-bottom:8px;line-height:1.2">Registrá tu <span style="color:var(--accent2)">licencia personal</span></h2>
+    <p style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:20px">Tu nombre quedará registrado en todos los PDFs que generes. Licencia de <strong style="color:var(--text)">uso personal exclusivo.</strong></p>
+    <div style="margin-bottom:12px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Nombre completo *</label>
+      <input type="text" id="actNombre" placeholder="Dr. Juan García" style="width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none"/>
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Email (opcional)</label>
+      <input type="email" id="actEmail" placeholder="doctor@clinica.com" style="width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none"/>
+    </div>
+    <button onclick="activateApp()" style="width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer">✓ Registrar mi licencia</button>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="onboarding" style="display:none">
+  <div class="ob-sheet">
+    <div class="ob-progress"><div class="ob-progress-fill" id="obProgress" style="width:20%"></div></div>
+    <div class="ob-slides">
+      <div class="ob-slide active" id="slide-0">
+        <span class="ob-emoji">📱</span>
+        <span class="ob-tag">Instalar como app</span>
+        <h2 class="ob-title">2SIS se instala en tu <span>dispositivo</span></h2>
+        <p class="ob-body">En <strong>Android:</strong> tocá los 3 puntos del navegador → "Instalar app" o "Agregar a pantalla de inicio".<br><br>En <strong>iOS (iPhone/iPad):</strong> tocá el botón compartir (cuadrado con flecha) → "Agregar a pantalla de inicio".</p>
+        <div class="ob-cards">
+          <div class="ob-card ob-card--green"><span class="ob-card-icon">✓</span><div><div class="ob-card-title">Sin Play Store, sin App Store</div><div class="ob-card-text">Se instala directo desde el navegador. Ícono propio, pantalla completa, sin barra de URL.</div></div></div>
+          <div class="ob-card ob-card--neutral"><span class="ob-card-icon">📶</span><div><div class="ob-card-title">Funciona sin internet</div><div class="ob-card-text">Después de la primera carga, todo funciona offline: cálculos, historial y PDFs.</div></div></div>
+        </div>
+      </div>
+      <div class="ob-slide" id="slide-1">
+        <span class="ob-emoji">💊</span>
+        <span class="ob-tag">Dosis Pediátrica · Primera vez</span>
+        <h2 class="ob-title">30 fármacos pediátricos <span>al instante</span></h2>
+        <p class="ob-body">Ingresás el peso, seleccionás el fármaco y obtenés la dosis exacta con las presentaciones disponibles. <strong>Sin internet después de instalar.</strong></p>
+        <div class="ob-cards">
+          <div class="ob-card ob-card--green"><span class="ob-card-icon">⚡</span><div><div class="ob-card-title">Cálculo instantáneo</div><div class="ob-card-text">Peso → dosis en mg → volumen según la presentación comercial argentina.</div></div></div>
+          <div class="ob-card ob-card--neutral"><span class="ob-card-icon">📋</span><div><div class="ob-card-title">PDF para los padres</div><div class="ob-card-text">Indicaciones listas para imprimir o enviar por WhatsApp, con membrete del médico.</div></div></div>
+        </div>
+      </div>
+      <div class="ob-slide" id="slide-2">
+        <span class="ob-emoji">⚕️</span>
+        <span class="ob-tag">Aviso importante</span>
+        <h2 class="ob-title">Herramienta de <span>apoyo clínico</span></h2>
+        <p class="ob-body">Las dosis son rangos de referencia basados en bibliografía pediátrica estándar (Nelson, Lexicomp, BNFC, AAP, WHO, SAP). <strong>El médico siempre valida y ajusta según el caso clínico.</strong></p>
+        <div class="ob-steps">
+          <div class="ob-step"><div class="ob-step-num">1</div><div><div class="ob-step-title">Ingresá el peso real del niño</div><div class="ob-step-text">El cálculo se basa en mg/kg/dosis. Peso actualizado = dosis correcta.</div></div></div>
+          <div class="ob-step"><div class="ob-step-num">2</div><div><div class="ob-step-title">Verificá el rango mostrado</div><div class="ob-step-text">Cada fármaco muestra dosis mínima y máxima según peso y bibliografía citada.</div></div></div>
+          <div class="ob-step"><div class="ob-step-num">3</div><div><div class="ob-step-title">Elegí la presentación disponible</div><div class="ob-step-text">El app calcula el volumen exacto para cada jarabe, suspensión o comprimido.</div></div></div>
+        </div>
+      </div>
+      <div class="ob-slide" id="slide-3">
+        <span class="ob-emoji">💾</span>
+        <span class="ob-tag">Privacidad</span>
+        <h2 class="ob-title">Datos en <span>este dispositivo</span></h2>
+        <p class="ob-body">El historial de consultas y la configuración del médico se guardan localmente. No salen de tu dispositivo.</p>
+        <div class="ob-cards">
+          <div class="ob-card ob-card--green"><span class="ob-card-icon">🔒</span><div><div class="ob-card-title">Privacidad total</div><div class="ob-card-text">Los datos de los pacientes nunca se envían a ningún servidor.</div></div></div>
+          <div class="ob-card ob-card--amber"><span class="ob-card-icon">⚠️</span><div><div class="ob-card-title">Mismo navegador siempre</div><div class="ob-card-text">No borres el caché. Siempre el mismo navegador en el mismo dispositivo.</div></div></div>
+        </div>
+      </div>
+      <div class="ob-slide" id="slide-4">
+        <span class="ob-emoji">🚀</span>
+        <span class="ob-tag">¡Todo listo!</span>
+        <h2 class="ob-title">30 fármacos en <span>5 categorías</span></h2>
+        <div class="ob-pills">
+          <span class="ob-pill ob-pill--amber">💊 Antibióticos (11)</span>
+          <span class="ob-pill ob-pill--purple">🌡️ Analgésicos (4)</span>
+          <span class="ob-pill ob-pill--green">🫁 Respiratorio (7)</span>
+          <span class="ob-pill ob-pill--green">🦠 Antiparasitarios (4)</span>
+          <span class="ob-pill ob-pill--neutral">⚕️ Otros (5)</span>
+        </div>
+        <div class="ob-card ob-card--green"><span class="ob-card-icon">⚙️</span><div><div class="ob-card-title">Configurá primero</div><div class="ob-card-text">Antes de generar PDFs, cargá tus datos en <strong>⚙️ Configuración</strong> para que aparezcan en el membrete.</div></div></div>
+      </div>
+    </div>
+    <div class="ob-footer">
+      <div class="ob-dots" id="obDots"></div>
+      <button class="ob-skip" id="obSkip" onclick="obSkip()">Omitir</button>
+      <button class="ob-next" id="obNext" onclick="obNext()">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+const SK='2sis_v1', LK='2sis_licensee', OBK='2sis_onboarding', TK='2sis_terms';
+const TERMS_VERSION='1.0';
+
+/* ═══════════════════════════════════════════
+   BASE DE DATOS — 30 fármacos pediátricos
+   Triple verificación: Nelson 21ª ed. → Lexicomp 30ª → BNFC 2023-2024
+   Valor más conservador en caso de discrepancia entre fuentes
+   ultima_revision: 2026-03 · edad_minima en meses
+═══════════════════════════════════════════ */
+const FARMACOS=[
+// ── ANTIBIÓTICOS ─────────────────────────────────────────────────────────
+{id:'amoxicilina',cat:'antibiotico',icon:'💊',nombre:'Amoxicilina',
+grupo:'Aminopenicilina',uso:'Infecciones respiratorias, OMA, faringitis estreptocócica, ITU',
+dosis:{min:25,max:45},unidad:'mg/kg/día',freq:'Cada 8 horas (dividido en 3 tomas)',
+maxDosis:500,maxDiario:3000,edad_minima:0,
+nota:'Dosis alta (80-90 mg/kg/día) para OMA con alta resistencia neumocócica o <2 años. Duración habitual 7-10 días (OMA), 10 días (faringitis).',
+presentaciones:[
+  {nombre:'Suspensión 125 mg/5 ml',conc:25,forma:'ml',marca:'Amoxidal / Amoxifur'},
+  {nombre:'Suspensión 250 mg/5 ml',conc:50,forma:'ml',marca:'Amoxidal Forte'},
+  {nombre:'Suspensión 500 mg/5 ml',conc:100,forma:'ml',marca:'Amoxifur Forte'},
+  {nombre:'Comprimidos 500 mg',conc:500,forma:'comp',marca:'Amoxidal / genérico'},
+],
+tag:'ab',warn:'',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 202, p. 1467','AAP Red Book 2021-2024 — Amoxicillin, p. 874','ANMAT: Vademécum Nacional Pediátrico (2023)']},
+
+{id:'amoxiclav',cat:'antibiotico',icon:'💊',nombre:'Amoxicilina + Clavulánico',
+grupo:'Aminopenicilina + IBL',uso:'OMA con alta resistencia, sinusitis bacteriana, mordeduras, infecciones BLEE',
+dosis:{min:25,max:45},unidad:'mg/kg/día (de amoxicilina)',freq:'Cada 8 horas (3 tomas/día)',
+maxDosis:500,maxDiario:3000,edad_minima:0,
+nota:'En niños >40 kg usar formulación adulto 875/125 mg cada 12h. Para OMA resistente: 80-90 mg/kg/día de amoxicilina (formulación ES 400/57 mg).',
+presentaciones:[
+  {nombre:'Susp. 250/62.5 mg/5 ml',conc:50,forma:'ml',marca:'Augmentin / Clavulan'},
+  {nombre:'Susp. 400/57 mg/5 ml (ES)',conc:80,forma:'ml',marca:'Augmentin ES'},
+  {nombre:'Comp. 500/125 mg',conc:500,forma:'comp',marca:'Augmentin / genérico'},
+],
+tag:'ab',warn:'Puede causar diarrea y colitis. Administrar siempre con alimentos para mejorar tolerancia GI.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 202, p. 1467','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Amoxicillin-Clavulanate','AAP Red Book 2021-2024 — p. 876']},
+
+{id:'azitromicina',cat:'antibiotico',icon:'💊',nombre:'Azitromicina',
+grupo:'Macrólido',uso:'Faringitis (alternativa), neumonía atípica, tos convulsa, alergia penicilinas',
+dosis:{min:10,max:10},unidad:'mg/kg/día',freq:'Una vez por día × 3-5 días',
+maxDosis:500,maxDiario:500,edad_minima:0,
+nota:'Faringitis/OMA: 10 mg/kg/día × 3 días. Neumonía atípica: 10 mg/kg día 1, luego 5 mg/kg días 2-5. Tos convulsa: 10 mg/kg/día × 5 días.',
+presentaciones:[
+  {nombre:'Suspensión 200 mg/5 ml',conc:40,forma:'ml',marca:'Zitromax / Trifamox IBL'},
+  {nombre:'Comprimidos 500 mg',conc:500,forma:'comp',marca:'Zitromax / genérico'},
+],
+tag:'ab',warn:'No administrar junto con antiácidos con aluminio/magnesio. Riesgo de QT prolongado en altas dosis.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 202, p. 1470','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Azithromycin','SAP: Guías de Tratamiento Antimicrobiano Pediátrico (2022)']},
+
+{id:'claritromicina',cat:'antibiotico',icon:'💊',nombre:'Claritromicina',
+grupo:'Macrólido',uso:'Infecciones respiratorias, H. pylori (en combinación con IBP + amoxicilina)',
+dosis:{min:15,max:15},unidad:'mg/kg/día',freq:'Cada 12 horas (2 tomas/día)',
+maxDosis:250,maxDiario:500,edad_minima:6,
+nota:'Duración habitual 7-14 días según indicación. En H. pylori (esquema triple): 15 mg/kg/día × 14 días. No recomendada <6 meses.',
+presentaciones:[
+  {nombre:'Suspensión 125 mg/5 ml',conc:25,forma:'ml',marca:'Klaricid / Klacid'},
+  {nombre:'Suspensión 250 mg/5 ml',conc:50,forma:'ml',marca:'Klaricid Forte'},
+  {nombre:'Comprimidos 250 mg',conc:250,forma:'comp',marca:'Klaricid / genérico'},
+],
+tag:'ab',warn:'Múltiples interacciones farmacológicas (inhibidor CYP3A4). Verificar polifarmacia siempre.',ultima_revision:'2026-03',
+fuentes:['Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Clarithromycin','BNF for Children 2023-2024 (BNFC) — Clarithromycin p. 412']},
+
+{id:'trimetoprim',cat:'antibiotico',icon:'💊',nombre:'TMP-SMX (Cotrimoxazol)',
+grupo:'Sulfonamida + Diaminopirimidina',uso:'ITU no complicada, shigellosis, pneumocistosis (PCP), alternativa OMA',
+dosis:{min:6,max:12},unidad:'mg/kg/día (de TMP)',freq:'Cada 12 horas (2 tomas/día)',
+maxDosis:160,maxDiario:320,edad_minima:2,
+nota:'Suspensión habitual: 40 mg TMP + 200 mg SMX / 5 ml. Profilaxis ITU: 2 mg/kg/noche de TMP. PCP tratamiento: 15-20 mg/kg/día de TMP × 21 días.',
+presentaciones:[
+  {nombre:'Susp. 40/200 mg/5 ml',conc:8,forma:'ml',marca:'Bactrim / Septrin'},
+  {nombre:'Comp. 80/400 mg',conc:80,forma:'comp',marca:'Bactrim / genérico'},
+  {nombre:'Comp. forte 160/800 mg',conc:160,forma:'comp',marca:'Bactrim forte'},
+],
+tag:'ab',warn:'CONTRAINDICADO en <2 meses (riesgo kernicterus en neonatos). Vigilar en insuficiencia renal. Hidratación adecuada.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 204, p. 1492','AAP Red Book 2021-2024 — Trimethoprim-Sulfamethoxazole','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Sulfamethoxazole-Trimethoprim']},
+
+{id:'cefalexina',cat:'antibiotico',icon:'💊',nombre:'Cefalexina',
+grupo:'Cefalosporina 1ª generación',uso:'Infecciones de piel y tejidos blandos, ITU, impétigo, celulitis',
+dosis:{min:25,max:50},unidad:'mg/kg/día',freq:'Cada 6-8 horas (3-4 tomas/día)',
+maxDosis:500,maxDiario:4000,edad_minima:0,
+nota:'Infecciones leves-moderadas: 25-50 mg/kg/día. Infecciones graves o SAMR-S: hasta 100 mg/kg/día. Excelente para celulitis y IPTB.',
+presentaciones:[
+  {nombre:'Suspensión 250 mg/5 ml',conc:50,forma:'ml',marca:'Keflex / Cefalexina'},
+  {nombre:'Comprimidos 500 mg',conc:500,forma:'comp',marca:'Keflex / genérico'},
+],
+tag:'ab',warn:'',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 202, p. 1476','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Cephalexin','BNF for Children 2023-2024 (BNFC) — Cefalexin p. 390']},
+
+{id:'cefixima',cat:'antibiotico',icon:'💊',nombre:'Cefixima',
+grupo:'Cefalosporina 3ª generación oral',uso:'OMA resistente, ITU febril, faringitis estreptocócica (alternativa)',
+dosis:{min:8,max:8},unidad:'mg/kg/día',freq:'Cada 12-24 horas',
+maxDosis:200,maxDiario:400,edad_minima:6,
+nota:'Dosis única: 16 mg/kg/día (hasta 400 mg/día) para mayor comodidad. Útil en gérmenes resistentes a amoxicilina. Buena biodisponibilidad oral.',
+presentaciones:[
+  {nombre:'Suspensión 100 mg/5 ml',conc:20,forma:'ml',marca:'Suprax / Cefixoral'},
+  {nombre:'Comprimidos 200 mg',conc:200,forma:'comp',marca:'Suprax'},
+  {nombre:'Comprimidos 400 mg',conc:400,forma:'comp',marca:'Suprax'},
+],
+tag:'ab',warn:'',ultima_revision:'2026-03',
+fuentes:['Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Cefixime','AAP Red Book 2021-2024 — p. 889','SAP: Guías de Tratamiento Antimicrobiano Pediátrico (2022)']},
+
+{id:'clindamicina',cat:'antibiotico',icon:'💊',nombre:'Clindamicina',
+grupo:'Lincosamida',uso:'Infecciones SAMR-AC, abscesos, angina de Ludwig, infecciones odontogénicas graves',
+dosis:{min:10,max:13},unidad:'mg/kg/día',freq:'Cada 6-8 horas',
+maxDosis:300,maxDiario:1800,edad_minima:0,
+nota:'Excelente cobertura para SAMR comunitario. En infecciones odontogénicas y abscesos de partes blandas. Verificar patrón de resistencia local.',
+presentaciones:[
+  {nombre:'Suspensión 75 mg/5 ml',conc:15,forma:'ml',marca:'Dalacin C'},
+  {nombre:'Cápsulas 150 mg',conc:150,forma:'comp',marca:'Dalacin C'},
+  {nombre:'Cápsulas 300 mg',conc:300,forma:'comp',marca:'Dalacin C'},
+],
+tag:'ab',warn:'Riesgo de colitis pseudomembranosa por C. difficile. Administrar con abundante agua en posición vertical.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 202, p. 1479','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Clindamycin','IDSA: Practice Guidelines for SSTI 2022']},
+
+{id:'nitrofurantoina',cat:'antibiotico',icon:'💊',nombre:'Nitrofurantoína',
+grupo:'Nitrofurano',uso:'ITU baja no complicada (cistitis), profilaxis ITU recurrente',
+dosis:{min:5,max:7},unidad:'mg/kg/día (tratamiento)',freq:'Cada 6 horas × 5-7 días',
+maxDosis:100,maxDiario:400,edad_minima:3,
+nota:'Profilaxis ITU: 1-2 mg/kg/noche dosis única (máx 50 mg). Solo para ITU baja: no sirve para pielonefritis (no alcanza tejido renal).',
+presentaciones:[
+  {nombre:'Suspensión 25 mg/5 ml',conc:5,forma:'ml',marca:'Macrobid / genérico'},
+  {nombre:'Cápsulas 100 mg',conc:100,forma:'comp',marca:'Macrobid'},
+],
+tag:'ab',warn:'CONTRAINDICADO en <3 meses y en insuficiencia renal (ClCr <30 ml/min). Administrar con alimentos. Puede colorear orina de amarillo-marrón.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 207, p. 1520','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Nitrofurantoin','EAU Guidelines on Urological Infections 2023 — Pediatric section']},
+
+{id:'metronidazol',cat:'antibiotico',icon:'💊',nombre:'Metronidazol',
+grupo:'Nitroimidazol',uso:'Giardiasis, amebiasis intestinal, infecciones anaerobias, H. pylori (combinado)',
+dosis:{min:15,max:35},unidad:'mg/kg/día',freq:'Cada 8 horas (3 tomas/día)',
+maxDosis:500,maxDiario:2000,edad_minima:0,
+nota:'Giardiasis: 15 mg/kg/día × 5-7 días. Amebiasis intestinal: 35-50 mg/kg/día × 10 días. Amebiasis invasiva (absceso): 35-50 mg/kg/día × 10 días + seguir con iodoquinol.',
+presentaciones:[
+  {nombre:'Suspensión 125 mg/5 ml',conc:25,forma:'ml',marca:'Flagyl / genérico'},
+  {nombre:'Comprimidos 250 mg',conc:250,forma:'comp',marca:'Flagyl'},
+  {nombre:'Comprimidos 500 mg',conc:500,forma:'comp',marca:'Flagyl'},
+],
+tag:'ab',warn:'Efecto antabuse (disulfiram-like) con alcohol. Evitar bebidas alcohólicas durante y hasta 48h después del tratamiento.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 297, p. 1789','WHO Model Formulary for Children (2010, vigente) — Metronidazole','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Metronidazole']},
+
+{id:'doxiciclina',cat:'antibiotico',icon:'💊',nombre:'Doxiciclina',
+grupo:'Tetraciclina',uso:'Neumonía atípica, rickettsiosis, enfermedad de Lyme, brucelosis (>8 años)',
+dosis:{min:2,max:4},unidad:'mg/kg/día',freq:'Cada 12 horas × 7-14 días',
+maxDosis:100,maxDiario:200,edad_minima:96,
+nota:'EXCLUSIVO para mayores de 8 años. Puede causar discoloración dental permanente y afectar el desarrollo óseo en menores. Rickettsiosis: 2.2 mg/kg/dosis (máx 100 mg) cada 12h.',
+presentaciones:[
+  {nombre:'Comprimidos 100 mg',conc:100,forma:'comp',marca:'Vibramicina / genérico'},
+],
+tag:'ab',warn:'⚠️ CONTRAINDICADO estrictamente en menores de 8 años. Administrar con abundante agua. No acostarse durante 30 minutos después de tomar. No con lácteos ni antiácidos.',ultima_revision:'2026-03',
+fuentes:['AAP Red Book 2021-2024 — Doxycycline, p. 905','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Doxycycline','CDC: Treatment Guidelines 2021 — Doxycycline in pediatrics']},
+
+// ── ANALGÉSICOS / ANTIPIRÉTICOS ──────────────────────────────────────────
+{id:'paracetamol',cat:'antipiretico',icon:'🌡️',nombre:'Paracetamol (Acetaminofén)',
+grupo:'Analgésico-Antipirético',uso:'Fiebre, dolor leve-moderado, odontalgia, cefalea',
+dosis:{min:10,max:15},unidad:'mg/kg/dosis',freq:'Cada 4-6 horas (máx 5 dosis/día)',
+maxDosis:1000,maxDiario:4000,edad_minima:0,
+nota:'RN término: 10-15 mg/kg/dosis. Prematuros: 10-12 mg/kg/dosis c/6-8h. Inicio de acción: 30-60 min. Duración efecto: 4-6 horas.',
+presentaciones:[
+  {nombre:'Gotas 100 mg/ml',conc:100,forma:'ml',marca:'Tafirol gotas / Panadol gotas'},
+  {nombre:'Suspensión 32 mg/ml (160 mg/5 ml)',conc:32,forma:'ml',marca:'Tafirol / Panadol'},
+  {nombre:'Suspensión 50 mg/ml (250 mg/5 ml)',conc:50,forma:'ml',marca:'Tafirol niños forte'},
+  {nombre:'Comprimidos 500 mg',conc:500,forma:'comp',marca:'Tafirol / Panadol / genérico'},
+],
+tag:'an',warn:'Máximo 5 dosis en 24 horas. No exceder 75 mg/kg/día ni 4g/día. Hepatotoxicidad grave en sobredosis. No combinar con otros productos que contengan paracetamol.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 77, p. 496','WHO Model Formulary for Children (2010) — Paracetamol','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Acetaminophen','ANMAT: Ficha técnica Paracetamol (2022)']},
+
+{id:'ibuprofeno',cat:'antipiretico',icon:'🌡️',nombre:'Ibuprofeno',
+grupo:'AINE (Antiinflamatorio No Esteroide)',uso:'Fiebre, dolor leve-moderado, procesos inflamatorios, odontalgia',
+dosis:{min:5,max:10},unidad:'mg/kg/dosis',freq:'Cada 6-8 horas (máx 4 dosis/día)',
+maxDosis:400,maxDiario:2400,edad_minima:6,
+nota:'Edad mínima: 6 meses. Efecto antipirético más duradero que paracetamol (6-8h vs 4-6h). Para dolor leve: 5 mg/kg/dosis; proceso inflamatorio: 7-10 mg/kg/dosis.',
+presentaciones:[
+  {nombre:'Suspensión 20 mg/ml (100 mg/5 ml)',conc:20,forma:'ml',marca:'Ibupirac / Advil niños'},
+  {nombre:'Suspensión 40 mg/ml (200 mg/5 ml)',conc:40,forma:'ml',marca:'Ibupirac Forte'},
+  {nombre:'Comprimidos 200 mg',conc:200,forma:'comp',marca:'Ibupirac / genérico'},
+  {nombre:'Comprimidos 400 mg',conc:400,forma:'comp',marca:'Ibupirac 400'},
+],
+tag:'an',warn:'CONTRAINDICADO en <6 meses, deshidratación/hipovolemia, varicela activa, dengue confirmado/sospechado. Administrar con alimentos para reducir irritación gástrica.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 77, p. 497','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Ibuprofen','AAP: Clinical Practice Guideline — Fever (2022)','ANMAT: Ficha técnica Ibuprofeno (2022)']},
+
+{id:'diclofenac',cat:'antipiretico',icon:'🌡️',nombre:'Diclofenac',
+grupo:'AINE',uso:'Dolor moderado, artritis juvenil idiopática (AJI), procesos inflamatorios',
+dosis:{min:1,max:2},unidad:'mg/kg/día',freq:'Cada 8-12 horas (2-3 tomas/día)',
+maxDosis:50,maxDiario:150,edad_minima:72,
+nota:'En artritis juvenil idiopática (AJI): hasta 3 mg/kg/día (máx 150 mg/día). Uso en >6 años. Preferir ibuprofeno en <6 años.',
+presentaciones:[
+  {nombre:'Comprimidos 25 mg',conc:25,forma:'comp',marca:'Voltaren / Diclofenac'},
+  {nombre:'Comprimidos 50 mg',conc:50,forma:'comp',marca:'Voltaren / genérico'},
+],
+tag:'an',warn:'No recomendado en <6 años. Riesgo gastrointestinal: administrar siempre con alimentos. Contraindicado en úlcera péptica activa.',ultima_revision:'2026-03',
+fuentes:['BNF for Children 2023-2024 (BNFC) — Diclofenac sodium p. 750','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Diclofenac','SAP: Guías Terapéuticas en Reumatología Pediátrica (2021)']},
+
+{id:'codeina',cat:'antipiretico',icon:'🌡️',nombre:'Codeína',
+grupo:'Opioide débil',uso:'Dolor moderado-severo (solo >12 años, post-quirúrgico)',
+dosis:{min:0.5,max:1},unidad:'mg/kg/dosis',freq:'Cada 4-6 horas (máx 6 dosis/día)',
+maxDosis:30,maxDiario:120,edad_minima:144,
+nota:'Solo en mayores de 12 años. Metabolismo variable (CYP2D6): algunos pacientes son metabolizadores ultra-rápidos y presentan toxicidad con dosis estándar.',
+presentaciones:[
+  {nombre:'Comprimidos 30 mg',conc:30,forma:'comp',marca:'Codeína Agepha / combinados'},
+],
+tag:'an',warn:'⚠️ CONTRAINDICADO estrictamente en <12 años. Prohibida post-amigdalectomía/adenoidectomía en cualquier edad. Riesgo de depresión respiratoria fatal en metabolizadores ultra-rápidos de CYP2D6.',ultima_revision:'2026-03',
+fuentes:['FDA Drug Safety Communication: Codeine in children (2013, vigente)','EMA: Restricción de uso de codeína en <12 años (2015)','BNF for Children 2023-2024 (BNFC) — Codeine phosphate p. 474']},
+
+// ── RESPIRATORIO ──────────────────────────────────────────────────────────
+{id:'salbutamol',cat:'respiratorio',icon:'🫁',nombre:'Salbutamol (Albuterol)',
+grupo:'Beta-2 agonista de acción corta',uso:'Broncoespasmo agudo, asma, sibilancias del lactante',
+dosis:{min:0.1,max:0.15},unidad:'mg/kg/dosis (nebulización)',freq:'Cada 20 min × 3 en crisis; c/4-6h en mantenimiento',
+maxDosis:5,maxDiario:null,edad_minima:0,
+nota:'Nebulización: 0.15 mg/kg/dosis (mín 2.5 mg, máx 5 mg) en 3 ml SF. IDM + aerocámara: 2-4 puffs (100 mcg c/u). Equivalencia clínica IDM + cámara = nebulización en crisis leve-moderada.',
+presentaciones:[
+  {nombre:'Sol. para nebulizar 5 mg/ml (0.5%)',conc:5,forma:'ml',marca:'Ventolin / Salbutamol genérico'},
+  {nombre:'IDM 100 mcg/puff',conc:0.1,forma:'puff',marca:'Ventolin / Aerolin'},
+],
+tag:'rc',warn:'Taquicardia, temblor fino e hipopotasemia con dosis altas o frecuentes. Monitorear frecuencia cardíaca en crisis. El IDM siempre debe usarse con aerocámara en <6 años.',ultima_revision:'2026-03',
+fuentes:['GINA: Global Strategy for Asthma Management 2023 — Reliever therapy','Nelson Textbook of Pediatrics, 21ª ed. — Cap. 169, p. 1104','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Albuterol']},
+
+{id:'bromuro',cat:'respiratorio',icon:'🫁',nombre:'Bromuro de Ipratropio',
+grupo:'Anticolinérgico broncodilatador',uso:'Broncoespasmo severo en crisis asmática aguda (combinado con salbutamol)',
+dosis:{min:250,max:500},unidad:'mcg/dosis',freq:'Cada 20 min × 3 dosis en crisis aguda',
+maxDosis:500,maxDiario:null,edad_minima:0,
+nota:'<2 años: 125-250 mcg/dosis. >2 años: 250-500 mcg/dosis. Usar SIEMPRE combinado con salbutamol, nunca como monoterapia. No indicado en mantenimiento.',
+presentaciones:[
+  {nombre:'Atrovent 500 mcg/2 ml (UDV)',conc:250,forma:'mcg fijos/dosis',marca:'Atrovent Unidosis'},
+  {nombre:'Atrovent IDM 20 mcg/puff',conc:0.02,forma:'puff',marca:'Atrovent IDM'},
+],
+tag:'rc',warn:'Puede causar sequedad bucal y retención urinaria. No usar como monoterapia broncodilatadora. Solo agudo, no en mantenimiento.',ultima_revision:'2026-03',
+fuentes:['GINA: Global Strategy for Asthma Management 2023 — Acute treatment','AAP Clinical Practice Guideline — Asthma (2020)','BNF for Children 2023-2024 (BNFC) — Ipratropium bromide p. 311']},
+
+{id:'prednisolona',cat:'respiratorio',icon:'🫁',nombre:'Prednisolona / Prednisona',
+grupo:'Corticosteroide sistémico',uso:'Crisis asmática, croup moderado-severo, síndrome nefrótico, reacciones alérgicas graves',
+dosis:{min:1,max:2},unidad:'mg/kg/día',freq:'Una vez por día (por la mañana)',
+maxDosis:40,maxDiario:60,edad_minima:0,
+nota:'Crisis asmática: 1-2 mg/kg/día × 3-5 días (máx 40 mg/día). Síndrome nefrótico: 2 mg/kg/día × 4-6 semanas. Ciclos cortos ≤7 días: no requieren descenso gradual.',
+presentaciones:[
+  {nombre:'Comprimidos 5 mg',conc:5,forma:'comp',marca:'Meticorten / Deltasone'},
+  {nombre:'Comprimidos 20 mg',conc:20,forma:'comp',marca:'Meticorten / genérico'},
+  {nombre:'Suspensión 3 mg/ml',conc:3,forma:'ml',marca:'Prelone'},
+  {nombre:'Suspensión 1 mg/ml',conc:1,forma:'ml',marca:'Prelone 1 mg/ml'},
+],
+tag:'rc',warn:'Ciclos cortos (≤7 días) no requieren descenso gradual. Administrar por la mañana para minimizar supresión del eje HPA. Vigilar hiperglucemia y HTA en tratamientos prolongados.',ultima_revision:'2026-03',
+fuentes:['GINA: Global Strategy for Asthma Management 2023 — Systemic corticosteroids','Nelson Textbook of Pediatrics, 21ª ed. — Cap. 169, p. 1107','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Prednisolone']},
+
+{id:'dexametasona',cat:'respiratorio',icon:'🫁',nombre:'Dexametasona',
+grupo:'Corticosteroide (potencia alta)',uso:'Croup (laringotraqueobronquitis), meningitis bacteriana, edema cerebral',
+dosis:{min:0.15,max:0.6},unidad:'mg/kg/dosis',freq:'Dosis única (croup) o c/6h (meningitis)',
+maxDosis:10,maxDiario:40,edad_minima:0,
+nota:'Croup leve-moderado: dosis única 0.15-0.3 mg/kg VO. Croup severo: 0.6 mg/kg VO/IM (máx 10 mg). Meningitis bacteriana: 0.15 mg/kg/dosis IV c/6h × 4 días (inicio junto con ATB).',
+presentaciones:[
+  {nombre:'Comprimidos 0.5 mg',conc:0.5,forma:'comp',marca:'Decadron / genérico'},
+  {nombre:'Comprimidos 4 mg',conc:4,forma:'comp',marca:'Decadron 4 mg'},
+  {nombre:'Inyectable 4 mg/ml',conc:4,forma:'ml (IM/IV)',marca:'Decadron inyectable'},
+],
+tag:'rc',warn:'Inicio de acción más rápido y mayor potencia que prednisona. No requiere descenso gradual en ciclos cortos (1-3 días). Nebulización: budesonida es alternativa en croup leve.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Croup Cap. 404, p. 2056','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Dexamethasone','Bjornson CL et al. NEJM 2004;351:1306 (croup RCT)','Russell KF et al. Cochrane Review 2011 — Glucocorticoids for croup']},
+
+{id:'cetirizina',cat:'respiratorio',icon:'🫁',nombre:'Cetirizina',
+grupo:'Antihistamínico H1 (2ª generación)',uso:'Rinitis alérgica estacional/perenne, urticaria aguda y crónica, dermatitis atópica',
+dosis:{min:0.25,max:0.25},unidad:'mg/kg/día',freq:'Una vez por día (preferentemente nocturno)',
+maxDosis:10,maxDiario:10,edad_minima:6,
+nota:'Dosis práctica por rango de peso: 6-12 meses: 2.5 mg/día (off-label); 1-5 años: 2.5-5 mg/día; >6 años o >30 kg: 10 mg/día. No requiere ajuste con alimentos.',
+presentaciones:[
+  {nombre:'Gotas 10 mg/ml',conc:10,forma:'ml',marca:'Zyrtec gotas / Reactine gotas'},
+  {nombre:'Jarabe 1 mg/ml (5 mg/5 ml)',conc:1,forma:'ml',marca:'Zyrtec jarabe'},
+  {nombre:'Comprimidos 10 mg',conc:10,forma:'comp',marca:'Zyrtec / Reactine / genérico'},
+],
+tag:'rc',warn:'Mínima sedación comparada con antihistamínicos de 1ª generación. En algunos niños puede causar paradójicamente agitación. No recomendado en <6 meses.',ultima_revision:'2026-03',
+fuentes:['Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Cetirizine','BNF for Children 2023-2024 (BNFC) — Cetirizine hydrochloride p. 296','ARIA Guidelines 2019 — Antihistamines in pediatric allergic rhinitis']},
+
+{id:'loratadina',cat:'respiratorio',icon:'🫁',nombre:'Loratadina',
+grupo:'Antihistamínico H1 (2ª generación)',uso:'Rinitis alérgica, urticaria, reacciones alérgicas leves',
+dosis:{min:0.2,max:0.2},unidad:'mg/kg/día',freq:'Una vez por día',
+maxDosis:10,maxDiario:10,edad_minima:24,
+nota:'Dosis práctica: 2-5 años (15-30 kg): 5 mg/día; >6 años o >30 kg: 10 mg/día. Puede administrarse con o sin alimentos. Inicio de acción: 1-3 horas.',
+presentaciones:[
+  {nombre:'Jarabe 1 mg/ml (5 mg/5 ml)',conc:1,forma:'ml',marca:'Clarityne / Loratadina genérico'},
+  {nombre:'Comprimidos 10 mg',conc:10,forma:'comp',marca:'Clarityne / genérico'},
+],
+tag:'rc',warn:'Sin efecto sedante clínicamente significativo. No recomendado en <2 años (datos limitados).',ultima_revision:'2026-03',
+fuentes:['Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Loratadine','BNF for Children 2023-2024 (BNFC) — Loratadine p. 298','ARIA Guidelines 2019 — Antihistamines in allergic rhinitis']},
+
+// ── ANTIPARASITARIOS ─────────────────────────────────────────────────────
+{id:'mebendazol',cat:'antiparasitario',icon:'🦠',nombre:'Mebendazol',
+grupo:'Benzimidazol',uso:'Oxiuriasis, ascariasis, trichuriasis, uncinariasis',
+dosis:{min:100,max:100},unidad:'mg/dosis (fija, independiente del peso)',freq:'Ver indicación según parásito',
+maxDosis:100,maxDiario:200,edad_minima:12,
+nota:'Oxiuros: 100 mg dosis única VO, repetir a las 2-4 semanas (toda la familia). Áscaris/Tricocéfalos: 100 mg c/12h × 3 días. Puede masticarse o triturarse.',
+presentaciones:[
+  {nombre:'Comprimidos 100 mg (masticables)',conc:100,forma:'comp',marca:'Vermox / Pantelmin'},
+  {nombre:'Suspensión 100 mg/5 ml',conc:20,forma:'ml',marca:'Vermox suspensión'},
+],
+tag:'ot',warn:'Datos limitados en <2 años: usar solo si beneficio supera riesgo. No se absorbe sistémicamente en forma significativa. Tratar simultáneamente a todos los convivientes.',ultima_revision:'2026-03',
+fuentes:['WHO Model Formulary for Children (2010, vigente) — Mebendazole','Nelson Textbook of Pediatrics, 21ª ed. — Cap. 294, p. 1767','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Mebendazole']},
+
+{id:'albendazol',cat:'antiparasitario',icon:'🦠',nombre:'Albendazol',
+grupo:'Benzimidazol',uso:'Oxiuriasis, giardiasis, hidatidosis, toxocariasis, neurocisticercosis',
+dosis:{min:15,max:15},unidad:'mg/kg/día',freq:'Ver indicación según parásito',
+maxDosis:400,maxDiario:800,edad_minima:12,
+nota:'Oxiuros (>2 años): 400 mg dosis única (independiente del peso), repetir a las 2 semanas. Giardia: 15 mg/kg/día × 5 días. Hidatidosis: 7.5 mg/kg c/12h × 28 días (ciclos). Administrar con comida grasa (mejora absorción x4).',
+presentaciones:[
+  {nombre:'Comprimidos 200 mg (masticables)',conc:200,forma:'comp',marca:'Zentel / Albenza'},
+  {nombre:'Comprimidos 400 mg',conc:400,forma:'comp',marca:'Zentel 400'},
+  {nombre:'Suspensión 200 mg/5 ml',conc:40,forma:'ml',marca:'Zentel suspensión'},
+],
+tag:'ot',warn:'CONTRAINDICADO en <2 años (datos insuficientes) y en embarazo. Puede masticarse o triturarse. Administrar con alimentos grasos para aumentar absorción. Hepatotoxicidad en tratamientos prolongados.',ultima_revision:'2026-03',
+fuentes:['WHO Model Formulary for Children (2010, vigente) — Albendazole','Nelson Textbook of Pediatrics, 21ª ed. — Cap. 294, p. 1768','CDC: Parasites — Albendazole (2023)','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Albendazole']},
+
+{id:'tinidazol',cat:'antiparasitario',icon:'🦠',nombre:'Tinidazol',
+grupo:'Nitroimidazol (2ª generación)',uso:'Giardiasis, amebiasis intestinal y hepática, tricomoniasis',
+dosis:{min:50,max:75},unidad:'mg/kg/día',freq:'Dosis única diaria × 1-3 días',
+maxDosis:2000,maxDiario:2000,edad_minima:36,
+nota:'Giardiasis: 50 mg/kg/día dosis única × 1-3 días (máx 2 g). Amebiasis intestinal: 50-75 mg/kg × 3 días. Amebiasis hepática: 50-75 mg/kg × 5 días. Ventaja: curso más corto que metronidazol.',
+presentaciones:[
+  {nombre:'Comprimidos 500 mg',conc:500,forma:'comp',marca:'Fasigyn / Tricolam'},
+  {nombre:'Suspensión 200 mg/5 ml',conc:40,forma:'ml',marca:'Tricolam suspensión'},
+],
+tag:'ot',warn:'Efecto antabuse (disulfiram-like) con alcohol. Evitar alcohol durante el tratamiento y hasta 72 horas después. No recomendado en <3 años ni en el primer trimestre del embarazo.',ultima_revision:'2026-03',
+fuentes:['Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Tinidazole','WHO Model Formulary for Children (2010) — Tinidazole','IDSA: Clinical Practice Guideline — Giardia lamblia (2017)']},
+
+{id:'ivermectina',cat:'antiparasitario',icon:'🦠',nombre:'Ivermectina',
+grupo:'Macrólido antiparasitario',uso:'Estrongiloidiasis, escabiosis, pediculosis (solo >15 kg)',
+dosis:{min:0.2,max:0.2},unidad:'mg/kg/dosis',freq:'Dosis única (repetir a los 14 días en escabiosis)',
+maxDosis:12,maxDiario:12,edad_minima:60,
+nota:'Solo en >15 kg (aproximadamente >5 años). Administrar en ayunas con agua. Escabiosis: dosis única, repetir a los 14 días + tratamiento tópico simultáneo + descontaminación del hogar.',
+presentaciones:[
+  {nombre:'Comprimidos 6 mg',conc:6,forma:'comp',marca:'Mectizan / Ivergen / Ivexterm'},
+  {nombre:'Comprimidos 3 mg',conc:3,forma:'comp',marca:'Ivectin 3 mg'},
+],
+tag:'ot',warn:'CONTRAINDICADO en <15 kg y en <5 años. Administrar en ayunas. En escabiosis tratar simultáneamente a todos los convivientes. Síndrome de Mazzotti (fiebre, hipotensión) en filariasis con alta carga parasitaria.',ultima_revision:'2026-03',
+fuentes:['WHO Model Formulary for Children (2010) — Ivermectin','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Ivermectin','CDC: Parasites — Ivermectin (2023)','AAP Red Book 2021-2024 — Ivermectin']},
+
+// ── OTROS ─────────────────────────────────────────────────────────────────
+{id:'omeprazol',cat:'otro',icon:'⚕️',nombre:'Omeprazol',
+grupo:'IBP (Inhibidor de Bomba de Protones)',uso:'ERGE, esofagitis erosiva, gastroprotección por AINEs, úlcera péptica',
+dosis:{min:0.7,max:3.5},unidad:'mg/kg/día',freq:'Una vez al día (30 min antes de la primera comida)',
+maxDosis:20,maxDiario:40,edad_minima:1,
+nota:'Lactantes 1-12 meses: 0.7-1.4 mg/kg/día. 1-16 años: 0.7-3.5 mg/kg/día. >16 años: 20-40 mg/día. Cápsulas: pueden abrirse y mezclar los gránulos con agua o jugo ácido (NO masticar los gránulos).',
+presentaciones:[
+  {nombre:'Cápsulas 10 mg',conc:10,forma:'comp',marca:'Losec / Omezol / Omeprazol'},
+  {nombre:'Cápsulas 20 mg',conc:20,forma:'comp',marca:'Losec / genérico'},
+  {nombre:'Polvo para suspensión 20 mg/sobre',conc:20,forma:'comp',marca:'Mopral / Belmazol'},
+],
+tag:'ot',warn:'Cápsulas: abrir y suspender los microgránulos en agua/jugo ácido. NO triturar ni masticar los gránulos. Puede aumentar riesgo de infecciones GI con uso prolongado.',ultima_revision:'2026-03',
+fuentes:['Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Omeprazole','BNF for Children 2023-2024 (BNFC) — Omeprazole p. 85','NASPGHAN: Clinical Practice Guideline — GERD in Infants and Children (2018)']},
+
+{id:'domperidona',cat:'otro',icon:'⚕️',nombre:'Domperidona',
+grupo:'Procinético / Antiemético',uso:'Náuseas y vómitos, gastroparesia, vaciamiento gástrico enlentecido, ERGE en lactantes',
+dosis:{min:0.25,max:0.25},unidad:'mg/kg/dosis',freq:'3 veces al día, 15-30 min antes de las comidas',
+maxDosis:10,maxDiario:30,edad_minima:0,
+nota:'Máximo 0.25 mg/kg/dosis, 3 veces por día (0.75 mg/kg/día total). Duración máxima recomendada por EMA: 1 semana. No superar 30 mg/día en adultos.',
+presentaciones:[
+  {nombre:'Suspensión 1 mg/ml',conc:1,forma:'ml',marca:'Motilium / Domperidon'},
+  {nombre:'Comprimidos 10 mg',conc:10,forma:'comp',marca:'Motilium / genérico'},
+],
+tag:'ot',warn:'Riesgo de arritmias ventriculares y muerte súbita cardiaca con dosis altas o uso >1 semana (alerta EMA 2014). CONTRAINDICADO en QT largo congénito o adquirido. Usar la mínima dosis eficaz por el menor tiempo posible.',ultima_revision:'2026-03',
+fuentes:['EMA: Restricción de uso de domperidona — alerta de seguridad (2014, vigente)','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Domperidone','BNF for Children 2023-2024 (BNFC) — Domperidone p. 73']},
+
+{id:'diazepam',cat:'otro',icon:'⚕️',nombre:'Diazepam (crisis convulsiva)',
+grupo:'Benzodiazepina',uso:'Crisis epiléptica aguda, convulsión febril prolongada (>5 min), status epilepticus',
+dosis:{min:0.3,max:0.5},unidad:'mg/kg/dosis (vía rectal)',freq:'Dosis única; repetir una vez si no cede en 5-10 min',
+maxDosis:10,maxDiario:null,edad_minima:0,
+nota:'RECTAL: 0.3-0.5 mg/kg (máx 10 mg) — usar solución inyectable como rectal. IV lento: 0.1-0.3 mg/kg/dosis (máx 5-10 mg). Velocidad IV: máx 1-2 mg/min.',
+presentaciones:[
+  {nombre:'Solución rectal 10 mg/2.5 ml',conc:4,forma:'ml (rectal)',marca:'Stesolid / Diazepam rectal'},
+  {nombre:'Ampolla inyectable 10 mg/2 ml',conc:5,forma:'ml (IV/rectal)',marca:'Valium / genérico'},
+],
+tag:'rc',warn:'⚠️ USO SUPERVISADO O HOSPITALARIO. Riesgo de depresión respiratoria, hipotensión y sedación profunda. Tener equipo de reanimación disponible. Via rectal: efecto en 5-10 minutos. No repetir más de 2 dosis sin monitoreo médico.',ultima_revision:'2026-03',
+fuentes:['Nelson Textbook of Pediatrics, 21ª ed. — Cap. 612, p. 2855','ILAE: Treatment of convulsive status epilepticus in children (2017)','Pediatric Dosage Handbook, Lexicomp 30ª ed. (2023) — Diazepam','AAP: Clinical Report — Febrile Seizures (2011, vigente)']},
+
+{id:'vitamina_d',cat:'otro',icon:'⚕️',nombre:'Vitamina D3 (Colecalciferol)',
+grupo:'Vitamina liposoluble esencial',uso:'Profilaxis de raquitismo, deficiencia de vitamina D, suplementación en lactantes',
+dosis:{min:400,max:1000},unidad:'UI/día (profilaxis)',freq:'Una vez al día',
+maxDosis:4000,maxDiario:4000,edad_minima:0,
+nota:'AAP 2022: todos los lactantes desde el nacimiento: 400 UI/día. Niños >1 año: 600-1000 UI/día. Deficiencia documentada (25-OH-D <20 ng/ml): 2000-4000 UI/día × 12 semanas según gravedad.',
+presentaciones:[
+  {nombre:'Gotas 400 UI/gota',conc:400,forma:'gotas',marca:'Adivit D / Vigantol gotas'},
+  {nombre:'Gotas 500 UI/gota',conc:500,forma:'gotas',marca:'D-Vigantol'},
+  {nombre:'Solución 800 UI/ml',conc:800,forma:'ml',marca:'Vitamina D3 solución'},
+],
+tag:'av',warn:'Hipervitaminosis D (hipercalcemia) con dosis excesivas prolongadas. Con dosis profilácticas habituales (400-1000 UI/día), la toxicidad es excepcional. No confundir unidades: 1 mcg = 40 UI.',ultima_revision:'2026-03',
+fuentes:['AAP: Prevention of Rickets and Vitamin D Deficiency (2022) — Pediatrics 150(1)','Endocrine Society: Vitamin D Clinical Practice Guideline (2011, vigente)','SAP: Suplementación con Vitamina D en Pediatría (2020)']},
+
+{id:'sulfato_zn',cat:'otro',icon:'⚕️',nombre:'Sulfato de Zinc',
+grupo:'Oligoelemento esencial',uso:'Diarrea aguda infecciosa (protocolo OMS), deficiencia de zinc, complemento nutricional',
+dosis:{min:10,max:20},unidad:'mg/día (zinc elemental)',freq:'Una vez al día × 10-14 días',
+maxDosis:20,maxDiario:20,edad_minima:0,
+nota:'Protocolo OMS/UNICEF para diarrea aguda: <6 meses: 10 mg/día × 14 días; >6 meses: 20 mg/día × 14 días. Reduce duración y gravedad de la diarrea. Separar 2h de antibióticos (quelación).',
+presentaciones:[
+  {nombre:'Solución 10 mg/5 ml',conc:2,forma:'ml',marca:'Zinco / Zincovit solución'},
+  {nombre:'Comprimidos dispersables 20 mg',conc:20,forma:'comp',marca:'Zinco / genérico'},
+],
+tag:'av',warn:'Puede causar náuseas y vómitos si se administra en ayunas. Administrar 2 horas separado de antibióticos (especialmente fluoroquinolonas y tetraciclinas). Riesgo de deficiencia de cobre con suplementación prolongada >50 mg/día.',ultima_revision:'2026-03',
+fuentes:['WHO/UNICEF: Clinical Management of Acute Diarrhoea (2004, vigente)','WHO Model Formulary for Children (2010) — Zinc sulfate','Bhutta ZA et al. Meta-analysis. Lancet 2008;371:417']}
+];
+
+const BIBLIO=[
+  {tag:'Nelson',txt:'Nelson Textbook of Pediatrics, 21ª ed. — Kliegman, Geme, Blum et al. Elsevier, 2020.'},
+  {tag:'Lexicomp',txt:'Pediatric & Neonatal Dosage Handbook, 30ª ed. — Taketomo, Hodding, Kraus. Lexicomp / Wolters Kluwer, 2023.'},
+  {tag:'BNFC',txt:'BNF for Children 2023–2024 — British National Formulary / RCPCH. BMJ Group & Pharmaceutical Press, 2023.'},
+  {tag:'AAP',txt:'AAP Red Book: Report of the Committee on Infectious Diseases, 32ª ed. — Kimberlin et al. AAP, 2021-2024.'},
+  {tag:'WHO',txt:'WHO Model Formulary for Children. World Health Organization, 2010 (vigente con actualizaciones).'},
+  {tag:'SAP',txt:'Sociedad Argentina de Pediatría — Guías de Tratamiento y Criterios de Diagnóstico 2020–2022. www.sap.org.ar'},
+  {tag:'ANMAT',txt:'ANMAT: Vademécum Nacional de Medicamentos / Fichas Técnicas 2022–2023. www.anmat.gov.ar'},
+  {tag:'GINA',txt:'GINA: Global Initiative for Asthma — Global Strategy for Asthma Management and Prevention, 2023. www.ginasthma.org'},
+  {tag:'IDSA/CDC',txt:'IDSA / CDC Clinical Practice Guidelines (Antimicrobial Stewardship, Parasitology, STD) — varios años vigentes.'},
+];
+
+const CATS=[
+  {id:'todos',label:'Todos'},
+  {id:'antibiotico',label:'💊 Antibióticos'},
+  {id:'antipiretico',label:'🌡️ Analgésicos'},
+  {id:'respiratorio',label:'🫁 Respiratorio'},
+  {id:'antiparasitario',label:'🦠 Antiparasit.'},
+  {id:'otro',label:'⚕️ Otros'},
+];
+
+let S={medico:{nombre:'',especialidad:'',tel:''},logoData:null,paciente:{nombre:'',fechaNac:'',edad:'',sexo:'',peso:''},farmActivo:null,historial:[]};
+let catActiva='todos',searchQ='',farmActivoObj=null;
+let mostrarPresentacionesPDF=true;
+let farmSeleccionados=[],modoMulti=false;
+
+/* ══ INIT ══ */
+function init(){
+  const saved=localStorage.getItem(SK);
+  if(saved){try{S=Object.assign({},S,JSON.parse(saved));}catch(e){}}
+  if(!S.historial)S.historial=[];
+  if(!S.paciente)S.paciente={nombre:'',fechaNac:'',edad:'',sexo:'',peso:''};
+  loadMedico();
+  sv('pNombre',S.paciente.nombre);sv('pFechaNac',S.paciente.fechaNac||'');
+  sv('pEdad',S.paciente.edad);sv('pSexo',S.paciente.sexo);sv('pPeso',S.paciente.peso);
+  if(S.paciente.fechaNac)calcularEdad();
+  if(S.logoData)showLogoPreview(S.logoData);
+  renderBiblio();renderCats();renderDrugList();
+  if(S.farmActivo){farmActivoObj=FARMACOS.find(f=>f.id===S.farmActivo);renderResultado();}
+  renderHistorial();checkPesoWarning();
+  renderTerminosInfo();
+}
+
+function saveState(){
+  S.medico={nombre:v('cfgNombre'),especialidad:v('cfgEsp'),tel:v('cfgTel')};
+  try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}
+}
+window.saveState=saveState;
+
+function autosave(){
+  S.paciente={nombre:v('pNombre'),fechaNac:v('pFechaNac'),edad:v('pEdad'),sexo:v('pSexo'),peso:v('pPeso')};
+  saveState();checkPesoWarning();
+}
+window.autosave=autosave;
+
+function loadMedico(){sv('cfgNombre',S.medico.nombre);sv('cfgEsp',S.medico.especialidad);sv('cfgTel',S.medico.tel);}
+
+/* ══ EDAD ══ */
+function calcularEdad(){
+  const fnStr=v('pFechaNac');if(!fnStr)return;
+  const fn=new Date(fnStr);const hoy=new Date();
+  if(isNaN(fn.getTime())||fn>hoy)return;
+  let meses=(hoy.getFullYear()-fn.getFullYear())*12+(hoy.getMonth()-fn.getMonth());
+  if(hoy.getDate()<fn.getDate())meses--;
+  const anios=Math.floor(meses/12);const mesesRest=meses%12;
+  let texto='';
+  if(anios>0)texto+=anios+' año'+(anios!==1?'s':'');
+  if(mesesRest>0)texto+=(texto?' ':'')+mesesRest+' mes'+(mesesRest!==1?'es':'');
+  if(!texto)texto='Recién nacido';
+  const box=document.getElementById('edadCalcBox');
+  const txt=document.getElementById('edadCalcText');
+  if(box&&txt){box.style.display='flex';txt.textContent=texto+' ('+meses+' meses)';}
+  // Auto-rellenar campo de edad texto
+  sv('pEdad',texto);
+  autosave();
+}
+window.calcularEdad=calcularEdad;
+
+function edadEnMeses(){
+  const fnStr=v('pFechaNac')||S.paciente.fechaNac;
+  if(fnStr){
+    const fn=new Date(fnStr);const hoy=new Date();
+    if(!isNaN(fn.getTime())&&fn<=hoy){
+      let m=(hoy.getFullYear()-fn.getFullYear())*12+(hoy.getMonth()-fn.getMonth());
+      if(hoy.getDate()<fn.getDate())m--;return m;
+    }
+  }
+  // Intentar parsear el texto libre
+  const edStr=(v('pEdad')||S.paciente.edad||'').toLowerCase();
+  let total=0;
+  const a=edStr.match(/(\d+)\s*a[ñn]/);const m=edStr.match(/(\d+)\s*m/);
+  if(a)total+=parseInt(a[1])*12;
+  if(m)total+=parseInt(m[1]);
+  return total||null;
+}
+
+/* ══ PESO ══ */
+function checkPesoWarning(){
+  const p=parseFloat(v('pPeso')||'0');const w=document.getElementById('pesoWarning');
+  if(!p){w.style.display='none';return;}
+  if(p<2){w.style.display='block';w.textContent='⚠️ Peso muy bajo — verificar unidad (kg).';}
+  else if(p>60){w.style.display='block';w.textContent='⚠️ Peso elevado para pediátrico — revisar datos.';}
+  else{w.style.display='none';}
+}
+
+/* ══ TABS ══ */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  const subs={paciente:'Datos del paciente',farmacos:'Seleccionar fármaco',resultado:'Dosis calculada',historial:'Historial de consultas',config:'Configuración'};
+  document.getElementById('headerSub').textContent=subs[tab]||'';
+  if(tab==='resultado')renderResultado();
+  if(tab==='historial')renderHistorial();
+}
+window.switchTab=switchTab;
+
+/* ══ BIBLIO ══ */
+function renderBiblio(){
+  const el=document.getElementById('biblioList');if(!el)return;
+  el.innerHTML=BIBLIO.map(b=>`<div style="display:flex;align-items:flex-start;gap:8px">
+    <span style="flex-shrink:0;font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--accent-dim);color:var(--accent2);margin-top:1px;font-family:'DM Mono',monospace">${b.tag}</span>
+    <span style="font-size:.72rem;color:var(--muted);line-height:1.55">${b.txt}</span>
+  </div>`).join('');
+}
+
+/* ══ CATS + SEARCH ══ */
+function renderCats(){
+  document.getElementById('catScroll').innerHTML=CATS.map(c=>
+    `<div class="cat-pill ${c.id===catActiva?'active':''}" onclick="setcat('${c.id}')">${c.label}</div>`
+  ).join('');
+}
+window.setcat=function(id){catActiva=id;renderCats();renderDrugList();};
+
+function filterDrugs(){
+  searchQ=v('searchInput').toLowerCase();
+  document.getElementById('searchClear').classList.toggle('show',searchQ.length>0);
+  renderDrugList();
+}
+window.filterDrugs=filterDrugs;
+
+function clearSearch(){sv('searchInput','');searchQ='';document.getElementById('searchClear').classList.remove('show');renderDrugList();}
+window.clearSearch=clearSearch;
+
+function renderDrugList(){
+  const list=document.getElementById('drugList');
+  const filtered=FARMACOS.filter(f=>{
+    const catOk=catActiva==='todos'||f.cat===catActiva;
+    const qOk=!searchQ||f.nombre.toLowerCase().includes(searchQ)||f.uso.toLowerCase().includes(searchQ)||f.grupo.toLowerCase().includes(searchQ);
+    return catOk&&qOk;
+  });
+  if(!filtered.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><p>No se encontraron fármacos con ese criterio.</p></div>';return;}
+  const tagC={ab:'tag-ab',an:'tag-an',ot:'tag-ot',rc:'tag-rc',av:'tag-av'};
+  const tagL={ab:'Antibiótico',an:'Analgésico',ot:'Otro',rc:'Respiratorio',av:'Vitamina'};
+  let html='';
+  if(modoMulti&&farmSeleccionados.length>0){
+    html+=`<div class="sel-bar"><div class="sel-bar-info">✓ ${farmSeleccionados.length} fármaco${farmSeleccionados.length!==1?'s':''} seleccionado${farmSeleccionados.length!==1?'s':''}</div><div class="sel-bar-actions"><span class="sel-bar-btn" onclick="farmSeleccionados=[];renderDrugList()">Limpiar</span><span class="sel-bar-btn primary" onclick="verDosisMulti()">Ver dosis →</span></div></div>`;
+  }
+  html+=filtered.map(f=>{
+    const sel=modoMulti&&farmSeleccionados.includes(f.id);
+    const actClass=modoMulti?(sel?'selected':''):(S.farmActivo===f.id?'active':'');
+    const clickFn=modoMulti?`toggleFarmaco('${f.id}')`:`selFarmaco('${f.id}')`;
+    return `<div class="drug-row ${actClass}" onclick="${clickFn}">
+      ${modoMulti?`<div class="drug-check">${sel?'✓':''}</div>`:''}
+      <div class="drug-icon">${f.icon}</div>
+      <div class="drug-body">
+        <div class="drug-name">${escH(f.nombre)}</div>
+        <div class="drug-sub">${escH(f.grupo)} · ${escH(f.uso.slice(0,55))}${f.uso.length>55?'…':''}</div>
+      </div>
+      <div class="drug-tag ${tagC[f.tag]||'tag-ot'}">${tagL[f.tag]||'Otro'}</div>
+    </div>`;
+  }).join('');
+  list.innerHTML=html;
+}
+
+function selFarmaco(id){S.farmActivo=id;farmActivoObj=FARMACOS.find(f=>f.id===id);saveState();renderDrugList();switchTab('resultado');}
+window.selFarmaco=selFarmaco;
+
+function toggleFarmaco(id){const i=farmSeleccionados.indexOf(id);if(i>=0)farmSeleccionados.splice(i,1);else farmSeleccionados.push(id);renderDrugList();}
+window.toggleFarmaco=toggleFarmaco;
+
+function toggleModoMulti(){
+  modoMulti=!modoMulti;farmSeleccionados=[];
+  const btn=document.getElementById('btnModoMulti');
+  if(btn){btn.textContent=modoMulti?'✓ Selección múltiple':'☐ Selección múltiple';btn.style.color=modoMulti?'var(--accent2)':'var(--muted)';btn.style.borderColor=modoMulti?'var(--accent)':'var(--border2)';btn.style.background=modoMulti?'var(--accent-dim)':'var(--surface2)';}
+  renderDrugList();
+}
+window.toggleModoMulti=toggleModoMulti;
+
+function verDosisMulti(){if(!farmSeleccionados.length){showToast('Seleccioná al menos un fármaco','⚠️');return;}switchTab('resultado');}
+window.verDosisMulti=verDosisMulti;
+
+/* ══ RESULTADO ══ */
+function recalcActivo(){if(farmActivoObj||farmSeleccionados.length)renderResultado();}
+window.recalcActivo=recalcActivo;
+
+function calcDrugBlock(f,peso){
+  const dosMin=+(f.dosis.min*peso).toFixed(1);const dosMax=+(f.dosis.max*peso).toFixed(1);
+  const dosMin2=Math.min(dosMin,f.maxDosis);const dosMax2=Math.min(dosMax,f.maxDosis);
+  const isDosis=f.unidad.includes('/dosis');const limitadoMax=dosMax>f.maxDosis;
+  const dosisMostrar=dosMin2===dosMax2?fmtNum(dosMin2):`${fmtNum(dosMin2)}–${fmtNum(dosMax2)}`;
+  const presHTML=f.presentaciones.map(p=>{
+    let c='';
+    if(p.forma==='ml'){const vMin=+(dosMin2/p.conc).toFixed(2);const vMax=+(dosMax2/p.conc).toFixed(2);const dt=isDosis?'/dosis':'/día';c=vMin===vMax?`${fmtNum(vMin)} ml${dt}`:`${fmtNum(vMin)}–${fmtNum(vMax)} ml${dt}`;}
+    else if(p.forma==='comp'){const tMin=+(dosMin2/p.conc).toFixed(2);const tMax=+(dosMax2/p.conc).toFixed(2);const dt=isDosis?'/dosis':'/día';c=tMin===tMax?`${fmtNum(tMin)} comp${dt}`:`${fmtNum(tMin)}–${fmtNum(tMax)} comp${dt}`;}
+    else{c=`${dosisMostrar} ${p.forma}`;}
+    return `<div class="pres-item"><div class="pres-icon">💉</div><div class="pres-body"><div class="pres-name">${escH(p.nombre)}</div><div class="pres-conc">${escH(p.marca||'')}</div></div><div class="pres-calc">${escH(c)}</div></div>`;
+  }).join('');
+  return {dosMin2,dosMax2,dosisMostrar,presHTML,warnHTML:f.warn?`<div class="result-warn">⚠️ ${escH(f.warn)}</div>`:'',maxHTML:limitadoMax?`<div class="result-max">🔴 Dosis limitada al máximo: ${fmtNum(f.maxDosis)} mg/dosis</div>`:'',unidadLabel:f.unidad};
+}
+
+function edadWarnHTML(f){
+  const em=edadEnMeses();
+  if(em===null||!f.edad_minima||f.edad_minima===0)return '';
+  if(em<f.edad_minima){
+    const min=f.edad_minima>=12?Math.floor(f.edad_minima/12)+' año'+(Math.floor(f.edad_minima/12)!==1?'s':''):f.edad_minima+' meses';
+    return `<div class="edad-warn">🔴 ADVERTENCIA DE EDAD: ${escH(f.nombre)} no está recomendado en menores de ${min}. La edad calculada del paciente es menor al límite de seguridad. Verificar con bibliografía antes de prescribir.</div>`;
+  }
+  return '';
+}
+
+function renderResultado(){
+  const cont=document.getElementById('resultContent');
+  const peso=parseFloat(v('pPeso')||S.paciente.peso||'0');
+
+  if(modoMulti&&farmSeleccionados.length>0){
+    if(!peso||peso<=0){cont.innerHTML='<div class="empty-state"><div class="empty-icon">⚖️</div><p>Ingresá el <strong>peso del paciente</strong> en la pestaña Paciente para calcular la dosis.</p></div>';return;}
+    const farmsObj=farmSeleccionados.map(id=>FARMACOS.find(f=>f.id===id)).filter(Boolean);
+    let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:.88rem;font-weight:700">${farmsObj.length} fármaco${farmsObj.length!==1?'s':''} · ${peso} kg</span><span style="font-size:.72rem;color:var(--muted);cursor:pointer" onclick="switchTab('farmacos')">← Editar selección</span></div>`;
+    farmsObj.forEach(f=>{
+      const b=calcDrugBlock(f,peso);const ew=edadWarnHTML(f);
+      html+=`<div class="result-drug-card">
+        <div class="result-drug-hdr">
+          <div class="result-drug-hdr-name">${f.icon} ${escH(f.nombre)}</div>
+          <span class="result-drug-hdr-remove" onclick="farmSeleccionados=farmSeleccionados.filter(id=>id!=='${f.id}');renderResultado();renderDrugList()" title="Quitar">✕</span>
+        </div>
+        <div class="result-drug-body">
+          ${ew}
+          <div class="dose-block"><div class="dose-main"><span class="dose-num">${b.dosisMostrar}</span><span class="dose-unit">mg</span></div><div class="dose-meta">${escH(b.unidadLabel)} · ${escH(f.freq)}</div></div>
+          ${b.warnHTML}${b.maxHTML}
+          ${f.nota?`<div style="font-size:.72rem;color:var(--muted);line-height:1.5;border-top:1px solid var(--border2);padding-top:8px">📌 ${escH(f.nota)}</div>`:''}
+          <div class="pres-list">${b.presHTML}</div>
+          <div class="revision-tag">✓ Rev. ${f.ultima_revision||'2026-03'} · ${f.fuentes?f.fuentes.length:0} fuentes</div>
+        </div>
+      </div>`;
+    });
+    html+=`<div class="pdf-toggle-row"><div class="pdf-toggle-label">🧪 Incluir presentaciones en PDF <span>Suspensiones y comprimidos</span></div><label class="toggle-switch"><input type="checkbox" id="togglePresentaciones" ${mostrarPresentacionesPDF?'checked':''} onchange="mostrarPresentacionesPDF=this.checked"><div class="toggle-track"></div></label></div>`;
+    html+=`<button class="btn-primary" onclick="exportPDF()">⬇ PDF con todos los fármacos</button>`;
+    html+=`<button class="btn-secondary" onclick="guardarHistorialMulti()">💾 Guardar en historial</button>`;
+    cont.innerHTML=html;return;
+  }
+
+  const f=farmActivoObj;
+  if(!f){cont.innerHTML='<div class="empty-state"><div class="empty-icon">💊</div><p>Seleccioná un fármaco en la pestaña <strong>Fármacos</strong>.</p></div>';return;}
+  if(!peso||peso<=0){cont.innerHTML='<div class="empty-state"><div class="empty-icon">⚖️</div><p>Ingresá el <strong>peso del paciente</strong> en la pestaña Paciente para calcular la dosis.</p></div>';return;}
+
+  const dosMin=+(f.dosis.min*peso).toFixed(1);const dosMax=+(f.dosis.max*peso).toFixed(1);
+  const dosMin2=Math.min(dosMin,f.maxDosis);const dosMax2=Math.min(dosMax,f.maxDosis);
+  const isDosis=f.unidad.includes('/dosis');const limitadoMax=dosMax>f.maxDosis;
+  const dosisMostrar=dosMin2===dosMax2?fmtNum(dosMin2):`${fmtNum(dosMin2)}–${fmtNum(dosMax2)}`;
+  const presHTML=f.presentaciones.map(p=>{
+    let c='';
+    if(p.forma==='ml'){const vMin=+(dosMin2/p.conc).toFixed(2);const vMax=+(dosMax2/p.conc).toFixed(2);const dt=isDosis?'/dosis':'/día';c=vMin===vMax?`${fmtNum(vMin)} ml${dt}`:`${fmtNum(vMin)}–${fmtNum(vMax)} ml${dt}`;}
+    else if(p.forma==='comp'){const tMin=+(dosMin2/p.conc).toFixed(2);const tMax=+(dosMax2/p.conc).toFixed(2);const dt=isDosis?'/dosis':'/día';c=tMin===tMax?`${fmtNum(tMin)} comp${dt}`:`${fmtNum(tMin)}–${fmtNum(tMax)} comp${dt}`;}
+    else{c=`${dosisMostrar} ${p.forma}`;}
+    return `<div class="pres-item"><div class="pres-icon">💉</div><div class="pres-body"><div class="pres-name">${escH(p.nombre)}</div><div class="pres-conc">${escH(p.marca||'')}</div></div><div class="pres-calc">${escH(c)}</div></div>`;
+  }).join('');
+
+  cont.innerHTML=`
+    <div class="result-hero">
+      ${edadWarnHTML(f)}
+      <div class="result-drug-name">${escH(f.nombre)}</div>
+      <div style="margin-top:8px"><span class="result-dosis-num">${dosisMostrar}</span><span class="result-dosis-unit">mg</span></div>
+      <div class="result-meta">${escH(f.unidad)} · Peso: ${fmtNum(peso)} kg<br>Rango: ${fmtNum(f.dosis.min)}–${fmtNum(f.dosis.max)} mg/kg</div>
+      <div class="result-freq">${escH(f.freq)}</div>
+      ${f.warn?`<div class="result-warn">⚠️ ${escH(f.warn)}</div>`:''}
+      ${limitadoMax?`<div class="result-max">🔴 Dosis limitada al máximo: ${fmtNum(f.maxDosis)} mg/dosis</div>`:''}
+      ${f.nota?`<div style="font-size:.72rem;color:var(--muted);margin-top:10px;line-height:1.55;border-top:1px solid var(--border2);padding-top:8px">📌 ${escH(f.nota)}</div>`:''}
+      <div class="revision-tag">✓ Revisado ${f.ultima_revision||'2026-03'} · Triple verificación bibliográfica</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>🧪</span><span class="card-title">Presentaciones disponibles</span><span class="card-badge">${f.presentaciones.length} opciones</span></div>
+      <div class="pres-list">${presHTML}</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>📚</span><span class="card-title">Fuentes bibliográficas</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${(f.fuentes||[]).map((fu,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;font-size:.72rem;color:var(--muted);line-height:1.5"><span style="color:var(--accent2);flex-shrink:0;font-weight:700;font-family:'DM Mono',monospace">[${i+1}]</span><span>${escH(fu)}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:10px;padding:8px 10px;background:var(--accent-dim);border-radius:var(--radius-xs);font-size:.68rem;color:var(--muted);line-height:1.55;border-left:2px solid var(--accent)">
+        Las dosis son rangos de referencia según bibliografía pediátrica estándar actualizada. El médico prescriptor es siempre responsable de la indicación final ajustada a cada paciente.
+      </div>
+    </div>
+    <div class="pdf-toggle-row">
+      <div class="pdf-toggle-label">🧪 Incluir presentaciones en PDF <span>Suspensiones y comprimidos</span></div>
+      <label class="toggle-switch"><input type="checkbox" id="togglePresentaciones" ${mostrarPresentacionesPDF?'checked':''} onchange="mostrarPresentacionesPDF=this.checked"><div class="toggle-track"></div></label>
+    </div>
+    <button class="btn-primary" onclick="exportPDF()">⬇ PDF para los padres</button>
+    <button class="btn-secondary" onclick="guardarHistorial()">💾 Guardar en historial</button>
+  `;
+}
+
+/* ══ HISTORIAL ══ */
+function guardarHistorial(){
+  autosave();const f=farmActivoObj;if(!f)return;
+  const peso=parseFloat(v('pPeso')||S.paciente.peso||'0');
+  const entry={id:Date.now(),tipo:'simple',farmId:f.id,farmNombre:f.nombre,paciente:S.paciente.nombre||'Paciente',edad:S.paciente.edad,peso:peso,fecha:new Date().toLocaleDateString('es-AR'),snapshot:JSON.stringify({paciente:S.paciente,farmActivo:S.farmActivo})};
+  S.historial.unshift(entry);if(S.historial.length>60)S.historial=S.historial.slice(0,60);
+  saveState();renderHistorial();showToast('Guardado en historial','💾');
+}
+window.guardarHistorial=guardarHistorial;
+
+function guardarHistorialMulti(){
+  autosave();if(!farmSeleccionados.length)return;
+  const peso=parseFloat(v('pPeso')||S.paciente.peso||'0');
+  const nombres=farmSeleccionados.map(id=>FARMACOS.find(f=>f.id===id)).filter(Boolean).map(f=>f.nombre).join(', ');
+  const entry={id:Date.now(),tipo:'multi',farmIds:[...farmSeleccionados],farmNombre:nombres,paciente:S.paciente.nombre||'Paciente',edad:S.paciente.edad,peso:peso,fecha:new Date().toLocaleDateString('es-AR'),snapshot:JSON.stringify({paciente:S.paciente,farmIds:[...farmSeleccionados]})};
+  S.historial.unshift(entry);if(S.historial.length>60)S.historial=S.historial.slice(0,60);
+  saveState();renderHistorial();showToast('Consulta multi guardada','💾');
+}
+window.guardarHistorialMulti=guardarHistorialMulti;
+
+function renderHistorial(){
+  const list=document.getElementById('historialList');
+  const cnt=document.getElementById('histCount');
+  cnt.textContent=S.historial.length+' registro'+(S.historial.length!==1?'s':'');
+  if(!S.historial.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><p>No hay consultas guardadas todavía.</p></div>';return;}
+  list.innerHTML=S.historial.map(h=>`
+    <div class="hist-item">
+      <div class="hist-dot" style="background:${h.tipo==='multi'?'var(--green)':'var(--accent)'}"></div>
+      <div class="hist-body">
+        <div class="hist-title">${h.tipo==='multi'?'📋 ':''} ${escH(h.farmNombre)} · ${escH(h.paciente)}</div>
+        <div class="hist-sub">${h.peso?h.peso+' kg · ':''}${escH(h.edad||'')} · ${h.fecha}</div>
+      </div>
+      <div class="hist-actions">
+        <div class="hist-btn" onclick="cargarHist(${h.id})" title="Cargar">📂</div>
+        <div class="hist-btn" onclick="eliminarHist(${h.id})" title="Eliminar" style="color:var(--red)">🗑️</div>
+      </div>
+    </div>`).join('');
+}
+
+function cargarHist(id){
+  const h=S.historial.find(x=>x.id===id);if(!h)return;
+  try{
+    const snap=JSON.parse(h.snapshot);
+    S.paciente=snap.paciente||S.paciente;
+    if(h.tipo==='multi'&&snap.farmIds){
+      farmSeleccionados=[...snap.farmIds];modoMulti=true;
+      const btn=document.getElementById('btnModoMulti');
+      if(btn){btn.textContent='✓ Selección múltiple';btn.style.color='var(--accent2)';btn.style.borderColor='var(--accent)';btn.style.background='var(--accent-dim)';}
+    } else {
+      S.farmActivo=snap.farmActivo||null;farmActivoObj=FARMACOS.find(f=>f.id===S.farmActivo)||null;
+    }
+    sv('pNombre',S.paciente.nombre);sv('pFechaNac',S.paciente.fechaNac||'');sv('pEdad',S.paciente.edad);sv('pSexo',S.paciente.sexo);sv('pPeso',S.paciente.peso);
+    if(S.paciente.fechaNac)calcularEdad();
+    switchTab('resultado');showToast('Consulta cargada','📂');
+  }catch(e){showToast('Error al cargar','❌');}
+}
+window.cargarHist=cargarHist;
+
+function eliminarHist(id){S.historial=S.historial.filter(h=>h.id!==id);saveState();renderHistorial();showToast('Eliminado','🗑️');}
+window.eliminarHist=eliminarHist;
+function limpiarHistorial(){if(!confirm('¿Limpiar todo el historial?'))return;S.historial=[];saveState();renderHistorial();showToast('Historial limpiado','🗑️');}
+window.limpiarHistorial=limpiarHistorial;
+function clearAll(){if(!confirm('¿Borrar todos los datos de la app?'))return;localStorage.removeItem(SK);localStorage.removeItem(LK);localStorage.removeItem(TK);localStorage.removeItem(OBK);location.reload();}
+window.clearAll=clearAll;
+
+/* ══ PDF ══ */
+function exportPDF(){
+  autosave();
+  const peso=parseFloat(v('pPeso')||S.paciente.peso||'0');
+  if(!peso){showToast('Ingresá el peso del paciente','⚠️');switchTab('paciente');return;}
+  const toggleEl=document.getElementById('togglePresentaciones');
+  if(toggleEl)mostrarPresentacionesPDF=toggleEl.checked;
+  const btn=document.querySelector('#panel-resultado .btn-primary');
+  if(btn){btn.classList.add('loading');btn.textContent='⏳ Generando PDF…';}
+  if(modoMulti&&farmSeleccionados.length>0){
+    const farmsObj=farmSeleccionados.map(id=>FARMACOS.find(f=>f.id===id)).filter(Boolean);
+    setTimeout(()=>{try{buildMultiPDF(farmsObj,peso,S.paciente,S.medico,S.logoData);}catch(e){console.error(e);showToast('Error al generar PDF','❌');}finally{if(btn){btn.classList.remove('loading');btn.innerHTML='⬇ PDF con todos los fármacos';}}},60);
+    return;
+  }
+  const f=farmActivoObj;
+  if(!f){showToast('Seleccioná un fármaco primero','⚠️');return;}
+  setTimeout(()=>{try{buildPDF(f,peso,S.paciente,S.medico,S.logoData);}catch(e){console.error(e);showToast('Error al generar PDF','❌');}finally{if(btn){btn.classList.remove('loading');btn.innerHTML='⬇ PDF para los padres';}}},60);
+}
+window.exportPDF=exportPDF;
+
+function pdfC(){return{dark:[20,33,58],accent:[48,96,158],accentL:[178,200,228],white:[255,255,255],bg:[250,251,253],bg2:[242,246,250],text:[16,20,36],muted:[108,122,142],mutedL:[155,168,186],green:[14,108,78],greenL:[214,240,228],amber:[135,88,8],amberL:[255,245,208],red:[138,32,32],redL:[255,230,230],border:[198,210,224]};}
+function ct(s){return String(s||'').replace(/[\u{1F000}-\u{1FFFF}]/gu,'').replace(/[⚠⚕📌✓✕→←⚙📋💊🌡️🫁🦠📄🔑🗑️❓📚✓☐]/gu,'').replace(/\s+/g,' ').trim();}
+
+function drawPDFHeader(doc,med,logoData,fechaStr,PW,M,C){
+  const HL=26,HM=8;
+  doc.setFillColor(...C.dark);doc.rect(0,0,PW,HL,'F');
+  doc.setFillColor(...C.accent);doc.rect(0,0,3,HL,'F');
+  let xT=HM;
+  if(logoData){try{const ext=logoData.startsWith('data:image/png')?'PNG':'JPEG';const props=doc.getImageProperties(logoData);const imgH=15;const imgW=Math.min(imgH*(props.width/props.height),22);doc.addImage(logoData,ext,HM,5.5,imgW,imgH);xT=HM+imgW+4;}catch(e){}}
+  doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(...C.white);
+  doc.text(ct(med.nombre||'Medico Pediatra'),xT,13);
+  const sub=[ct(med.especialidad||''),ct(med.tel||'')].filter(Boolean).join('  ·  ');
+  doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(...C.accentL);
+  if(sub)doc.text(sub,xT,21);
+  doc.setFontSize(5.5);doc.setFont('helvetica','normal');doc.setTextColor(138,155,182);
+  doc.text('INDICACION MEDICA PEDIATRICA · 2SIS v1.0 · Apache90',PW-HM,9,{align:'right'});
+  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(...C.white);
+  doc.text(fechaStr,PW-HM,20,{align:'right'});
+  doc.setFillColor(...C.accent);doc.rect(0,HL,PW,1,'F');
+  return HL+1;
+}
+
+function drawPatientCard(doc,pac,peso,y,PW,M,CW,C){
+  const H=16;
+  doc.setFillColor(...C.bg2);doc.rect(M,y,CW,H,'F');
+  doc.setFillColor(...C.accent);doc.rect(M,y,2.5,H,'F');
+  doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(...C.text);
+  doc.text(ct(pac.nombre||'Paciente sin nombre'),M+6,y+7);
+  const sub=[pac.edad,pac.sexo].filter(Boolean).join('  ·  ');
+  if(sub){doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(...C.muted);doc.text(ct(sub),M+6,y+13);}
+  const PR=PW-M-3;
+  doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(...C.muted);doc.text('PESO',PR,y+6,{align:'right'});
+  doc.setFontSize(12);doc.setFont('helvetica','bold');doc.setTextColor(...C.accent);doc.text(`${peso} kg`,PR,y+13,{align:'right'});
+  return y+H+4;
+}
+
+function drawDrugBlock(doc,f,peso,y,idx,showIdx,PW,PH,M,CW,C,showPres){
+  if(y>PH-50){doc.addPage();y=14;}
+  const RP=PW-M-3;
+  const dosMin=+(f.dosis.min*peso).toFixed(1);const dosMax=+(f.dosis.max*peso).toFixed(1);
+  const dosMin2=Math.min(dosMin,f.maxDosis);const dosMax2=Math.min(dosMax,f.maxDosis);
+  const limitadoMax=dosMax>f.maxDosis;
+  const dosisMgStr=dosMin2===dosMax2?`${fmtNum(dosMin2)} mg`:`${fmtNum(dosMin2)}-${fmtNum(dosMax2)} mg`;
+  y+=5;
+  doc.setFillColor(...C.dark);doc.roundedRect(M,y,CW,9,1.5,1.5,'F');
+  if(showIdx){doc.setFillColor(...C.accent);doc.circle(M+6.5,y+4.5,3.5,'F');doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(...C.white);doc.text(String(idx+1),M+6.5,y+6.5,{align:'center'});doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(...C.white);doc.text(ct(f.nombre).toUpperCase(),M+13,y+6.5);}
+  else{doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(...C.white);doc.text(ct(f.nombre).toUpperCase(),M+6,y+6.5);}
+  doc.setFontSize(6.5);doc.setFont('helvetica','normal');doc.setTextColor(...C.accentL);
+  const gW=doc.getTextWidth(ct(f.grupo));if(gW<60)doc.text(ct(f.grupo),RP,y+6.5,{align:'right'});
+  y+=9;
+  doc.setFillColor(...C.greenL);doc.rect(M,y,CW,10,'F');doc.setFillColor(...C.green);doc.rect(M,y,2.5,10,'F');
+  doc.setFontSize(12);doc.setFont('helvetica','bold');doc.setTextColor(...C.dark);doc.text(dosisMgStr,M+6,y+7.5);
+  const doseW=doc.getTextWidth(dosisMgStr);
+  doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(...C.muted);doc.text(ct(f.unidad),M+8+doseW,y+7.5);
+  const freqLines=doc.splitTextToSize(ct(f.freq),CW*0.44);
+  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(...C.green);
+  freqLines.forEach((l,i)=>doc.text(l,RP,y+5+i*6,{align:'right'}));
+  y+=10;
+  if(limitadoMax){doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...C.red);doc.text(`Max: ${fmtNum(f.maxDosis)} mg/dosis`,RP,y+5,{align:'right'});}
+  if(showPres&&f.presentaciones.length>0){
+    y+=2;
+    doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(...C.muted);doc.text('COMO PREPARAR:',M,y+5);
+    doc.setDrawColor(...C.border);doc.setLineWidth(0.3);doc.line(M+34,y+3,RP,y+3);
+    y+=7;
+    f.presentaciones.forEach((p,pi)=>{
+      if(y>PH-20){doc.addPage();y=14;}
+      const rH=7;if(pi%2===1){doc.setFillColor(...C.bg2);doc.rect(M,y,CW,rH,'F');}
+      let calc='';
+      if(p.forma==='ml'){const vMin=+(dosMin2/p.conc).toFixed(2);const vMax=+(dosMax2/p.conc).toFixed(2);calc=vMin===vMax?`${fmtNum(vMin)} ml`:`${fmtNum(vMin)}-${fmtNum(vMax)} ml`;}
+      else if(p.forma==='comp'){const tMin=+(dosMin2/p.conc).toFixed(2);const tMax=+(dosMax2/p.conc).toFixed(2);calc=tMin===tMax?`${fmtNum(tMin)} comp.`:`${fmtNum(tMin)}-${fmtNum(tMax)} comp.`;}
+      else{calc='Ver indicacion';}
+      doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(...C.text);doc.text(ct(p.nombre),M+3,y+5);
+      doc.setTextColor(...C.muted);const nW=doc.getTextWidth(ct(p.nombre));doc.text(ct(p.marca||''),M+5+nW,y+5);
+      doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(...C.accent);doc.text(calc,RP,y+5,{align:'right'});
+      y+=rH;
+    });
+  }
+  if(f.nota){y+=3;if(y>PH-25){doc.addPage();y=14;}const nl=doc.splitTextToSize(ct(f.nota),CW-12);const nH=nl.length*4.8+9;doc.setFillColor(...C.amberL);doc.roundedRect(M,y,CW,nH,1.5,1.5,'F');doc.setFillColor(...C.amber);doc.rect(M,y,2,nH,'F');doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...C.amber);doc.text('NOTA CLINICA',M+5,y+6);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(82,60,4);nl.forEach((l,i)=>doc.text(l,M+5,y+11+i*4.8));y+=nH+2;}
+  if(f.warn){y+=2;if(y>PH-25){doc.addPage();y=14;}const wl=doc.splitTextToSize(ct(f.warn),CW-12);const wH=wl.length*4.8+9;doc.setFillColor(...C.redL);doc.roundedRect(M,y,CW,wH,1.5,1.5,'F');doc.setFillColor(...C.red);doc.rect(M,y,2,wH,'F');doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...C.red);doc.text('ADVERTENCIA',M+5,y+6);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(102,24,24);wl.forEach((l,i)=>doc.text(l,M+5,y+11+i*4.8));y+=wH+2;}
+  y+=4;doc.setDrawColor(...C.border);doc.setLineWidth(0.4);doc.line(M,y,PW-M,y);return y+3;
+}
+
+function drawDisclaimer(doc,y,PW,M,CW,C){
+  if(y>230){doc.addPage();y=14;}
+  doc.setFillColor(240,244,255);doc.roundedRect(M,y,CW,16,2,2,'F');
+  doc.setFillColor(...C.accent);doc.rect(M,y,2,16,'F');
+  doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(...C.muted);doc.text('AVISO LEGAL IMPORTANTE',M+5,y+6);
+  doc.setFont('helvetica','normal');doc.setFontSize(6.8);doc.setTextColor(60,80,130);
+  doc.text('Herramienta de referencia bibliografica. Dosis orientativas — no reemplaza el criterio clinico del profesional prescriptor. Verificar con bibliografia actualizada.',M+5,y+12);
+  return y+20;
+}
+
+function drawFuentesPDF(doc,fuentes,y,PW,PH,M,CW,C){
+  if(!fuentes||!fuentes.length)return y;
+  if(y>PH-30){doc.addPage();y=14;}
+  doc.setFillColor(232,235,255);doc.roundedRect(M,y,CW,fuentes.length*5.2+14,2,2,'F');
+  doc.setFillColor(...C.accent);doc.roundedRect(M,y,2.5,fuentes.length*5.2+14,0,0,'F');
+  doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(30,50,140);doc.text('FUENTES BIBLIOGRAFICAS',M+5,y+7);
+  doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(50,65,130);
+  fuentes.forEach((fu,i)=>{doc.text(`[${i+1}] ${ct(fu)}`,M+5,y+13+i*5.2);});
+  return y+fuentes.length*5.2+18;
+}
+
+function drawPDFFooter(doc,med,fechaStr,lic,PH,PW,M,C){
+  const pages=doc.internal.getNumberOfPages();
+  for(let pg=1;pg<=pages;pg++){
+    doc.setPage(pg);doc.setFillColor(...C.dark);doc.rect(0,PH-8,PW,8,'F');doc.setFillColor(...C.accent);doc.rect(0,PH-8,3,8,'F');
+    doc.setFontSize(6);doc.setFont('helvetica','normal');doc.setTextColor(...C.accentL);
+    doc.text(ct(med.nombre||'2SIS Dosis Pediatrica')+' · '+fechaStr,M+1,PH-2.5);
+    doc.setTextColor(...C.mutedL);
+    doc.text(`2SIS Apache90 · Lic.: ${ct(lic.nombre||'—')} · v1.0 · ${pg}/${pages}`,PW-M,PH-2.5,{align:'right'});
+  }
+}
+
+function buildPDF(f,peso,pac,med,logoData){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const PW=doc.internal.pageSize.getWidth(),PH=doc.internal.pageSize.getHeight();
+  const M=14,CW=PW-M*2;const lic=getLicensee();
+  const fechaStr=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  const C=pdfC();
+  let y=drawPDFHeader(doc,med,logoData,fechaStr,PW,M,C)+3;
+  y=drawPatientCard(doc,pac,peso,y,PW,M,CW,C);
+  y=drawDrugBlock(doc,f,peso,y,0,false,PW,PH,M,CW,C,mostrarPresentacionesPDF);
+  y=drawDisclaimer(doc,y,PW,M,CW,C);
+  y=drawFuentesPDF(doc,f.fuentes,y,PW,PH,M,CW,C);
+  drawPDFFooter(doc,med,fechaStr,lic,PH,PW,M,C);
+  const fn=`2SIS_${ct(f.nombre||'farmaco').replace(/[^a-z0-9]/gi,'_').slice(0,18)}_${ct(pac.nombre||'pac').replace(/[^a-z0-9]/gi,'_').slice(0,12)}_${Date.now().toString().slice(-5)}.pdf`;
+  doc.save(fn);showToast('PDF descargado','📄');
+}
+
+function buildMultiPDF(farms,peso,pac,med,logoData){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const PW=doc.internal.pageSize.getWidth(),PH=doc.internal.pageSize.getHeight();
+  const M=14,CW=PW-M*2;const lic=getLicensee();
+  const fechaStr=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  const C=pdfC();
+  let y=drawPDFHeader(doc,med,logoData,fechaStr,PW,M,C)+3;
+  y=drawPatientCard(doc,pac,peso,y,PW,M,CW,C);
+  farms.forEach((f,idx)=>{y=drawDrugBlock(doc,f,peso,y,idx,true,PW,PH,M,CW,C,mostrarPresentacionesPDF);});
+  y=drawDisclaimer(doc,y,PW,M,CW,C);
+  // Fuentes consolidadas sin duplicados
+  const allFuentes=[...new Set(farms.flatMap(f=>f.fuentes||[]))];
+  y=drawFuentesPDF(doc,allFuentes,y,PW,PH,M,CW,C);
+  drawPDFFooter(doc,med,fechaStr,lic,PH,PW,M,C);
+  const fn=`2SIS_multi_${ct(pac.nombre||'pac').replace(/[^a-z0-9]/gi,'_').slice(0,12)}_${Date.now().toString().slice(-5)}.pdf`;
+  doc.save(fn);showToast(`PDF con ${farms.length} farmacos descargado`,'📄');
+}
+
+/* ══ TÉRMINOS ══ */
+function checkTermsScroll(){
+  const body=document.getElementById('termsBody');
+  const footer=document.getElementById('termsFooter');
+  const hint=document.getElementById('termsHint');
+  if(!body||!footer||!hint)return;
+  const scrolled=body.scrollTop+body.clientHeight>=body.scrollHeight-20;
+  if(scrolled){footer.style.display='flex';hint.style.display='none';}
+}
+window.checkTermsScroll=checkTermsScroll;
+
+function checkBothChecked(){
+  const c1=document.getElementById('chk1');const c2=document.getElementById('chk2');const btn=document.getElementById('btnAceptarTerminos');
+  if(btn)btn.disabled=!(c1&&c1.checked&&c2&&c2.checked);
+}
+window.checkBothChecked=checkBothChecked;
+
+function aceptarTerminos(){
+  const c1=document.getElementById('chk1');const c2=document.getElementById('chk2');
+  if(!c1||!c2||!c1.checked||!c2.checked)return;
+  // Guardar aceptación con fecha y versión
+  const terms={version:TERMS_VERSION,fecha:new Date().toISOString(),timestamp:Date.now()};
+  localStorage.setItem(TK,JSON.stringify(terms));
+  document.getElementById('termsOverlay').style.display='none';
+  // Mostrar activación
+  document.getElementById('activationOverlay').style.display='flex';
+}
+window.aceptarTerminos=aceptarTerminos;
+
+function verTerminos(){
+  document.getElementById('termsOverlay').style.display='flex';
+  // Reset scroll
+  const body=document.getElementById('termsBody');if(body)body.scrollTop=0;
+  const footer=document.getElementById('termsFooter');const hint=document.getElementById('termsHint');
+  if(footer)footer.style.display='none';if(hint)hint.style.display='block';
+  const c1=document.getElementById('chk1');const c2=document.getElementById('chk2');
+  if(c1)c1.checked=false;if(c2)c2.checked=false;
+  const btn=document.getElementById('btnAceptarTerminos');if(btn)btn.disabled=true;
+}
+window.verTerminos=verTerminos;
+
+function renderTerminosInfo(){
+  const el=document.getElementById('terminosInfo');if(!el)return;
+  try{
+    const t=JSON.parse(localStorage.getItem(TK)||'{}');
+    if(t.version){const d=new Date(t.fecha);el.innerHTML=`Versión ${t.version} aceptada el ${d.toLocaleDateString('es-AR')} a las ${d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}. Registro guardado localmente.`;}
+    else{el.innerHTML='Términos no registrados aún.';}
+  }catch(e){el.innerHTML='';}
+}
+
+/* ══ ACTIVACIÓN ══ */
+function getLicensee(){try{return JSON.parse(localStorage.getItem(LK)||'{}');}catch(e){return {};}}
+window.getLicensee=getLicensee;
+
+window.activateApp=function(){
+  const nombre=document.getElementById('actNombre').value.trim();
+  if(!nombre){document.getElementById('actNombre').style.borderColor='var(--red)';document.getElementById('actNombre').focus();return;}
+  const email=document.getElementById('actEmail').value.trim();
+  localStorage.setItem(LK,JSON.stringify({nombre,email,fecha:new Date().toISOString()}));
+  localStorage.removeItem(OBK);
+  document.getElementById('activationOverlay').style.display='none';
+  init();
+  const ob=document.getElementById('onboarding');ob.style.display='flex';ob.classList.remove('ob-hidden');
+  obCur=0;obInit();
+};
+
+/* ══ LOGO ══ */
+function handleLogo(e){const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){showToast('Logo máx 2MB','⚠️');return;}const r=new FileReader();r.onload=ev=>{S.logoData=ev.target.result;showLogoPreview(ev.target.result);saveState();};r.readAsDataURL(f);}
+window.handleLogo=handleLogo;
+function showLogoPreview(src){document.getElementById('logoImg').src=src;document.getElementById('logoImg').style.display='block';document.getElementById('logoLbl').style.display='none';document.getElementById('logoClr').style.display='flex';}
+function clearLogo(e){e.stopPropagation();e.preventDefault();S.logoData=null;document.getElementById('logoImg').style.display='none';document.getElementById('logoLbl').style.display='flex';document.getElementById('logoClr').style.display='none';document.getElementById('logoInput').value='';saveState();}
+window.clearLogo=clearLogo;
+
+/* ══ ONBOARDING ══ */
+const OB_TOTAL=5;let obCur=0;
+function obInit(){
+  if(localStorage.getItem(OBK)==='done'){document.getElementById('onboarding').style.display='none';return;}
+  obDots();obProgress();
+  const sheet=document.querySelector('.ob-sheet');let sx=0;
+  sheet.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+  sheet.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60){if(dx<0&&obCur<OB_TOTAL-1)obGo(obCur+1);if(dx>0&&obCur>0)obGo(obCur-1);}},{passive:true});
+}
+function obGo(n){
+  document.getElementById('slide-'+obCur).classList.remove('active');obCur=n;document.getElementById('slide-'+obCur).classList.add('active');
+  obProgress();obDots();
+  const last=obCur===OB_TOTAL-1;const btn=document.getElementById('obNext');
+  btn.textContent=last?'¡Empezar! 🚀':'Siguiente →';btn.classList.toggle('ob-finish',last);
+  document.getElementById('obSkip').style.display=last?'none':'block';
+}
+function obProgress(){document.getElementById('obProgress').style.width=((obCur+1)/OB_TOTAL*100)+'%';}
+function obDots(){document.getElementById('obDots').innerHTML=Array.from({length:OB_TOTAL},(_,i)=>`<div class="ob-dot ${i===obCur?'active':''}" onclick="obGo(${i})"></div>`).join('');}
+function obFinish(){localStorage.setItem(OBK,'done');const o=document.getElementById('onboarding');o.classList.add('ob-hidden');setTimeout(()=>o.style.display='none',450);}
+window.obNext=()=>obCur<OB_TOTAL-1?obGo(obCur+1):obFinish();
+window.obSkip=obFinish;window.obGo=obGo;
+window.showOnboarding=()=>{localStorage.removeItem(OBK);location.reload();};
+
+/* ══ UTILS ══ */
+function fmtNum(n){if(n===null||n===undefined)return '—';return Number.isInteger(n)?String(n):parseFloat(n.toFixed(2)).toString();}
+function v(id){const e=document.getElementById(id);return e?e.value:'';}
+function sv(id,val){const e=document.getElementById(id);if(e)e.value=val||'';}
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function showToast(msg,icon='✓'){const t=document.getElementById('toast');t.innerHTML=`<span>${icon}</span><span>${msg}</span>`;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+window.showToast=showToast;
+
+/* ══ KICK OFF ══ */
+const hasLicense=localStorage.getItem(LK);
+const hasTerms=localStorage.getItem(TK);
+if(hasLicense&&hasTerms){
+  document.getElementById('termsOverlay').style.display='none';
+  document.getElementById('activationOverlay').style.display='none';
+  init();obInit();
+} else if(hasTerms&&!hasLicense){
+  // Términos aceptados pero sin licencia (raro, recuperar)
+  document.getElementById('termsOverlay').style.display='none';
+  document.getElementById('activationOverlay').style.display='flex';
+  document.getElementById('onboarding').style.display='none';
+} else {
+  // Primera vez: mostrar términos primero
+  document.getElementById('termsOverlay').style.display='flex';
+  document.getElementById('activationOverlay').style.display='none';
+  document.getElementById('onboarding').style.display='none';
+}
+/* ══ SERVICE WORKER — Registro PWA ══ */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg=>{
+        console.log('[2SIS] SW registrado:', reg.scope);
+        // Detectar actualización disponible
+        reg.addEventListener('updatefound', ()=>{
+          const newWorker=reg.installing;
+          newWorker.addEventListener('statechange', ()=>{
+            if(newWorker.state==='installed'&&navigator.serviceWorker.controller){
+              // Nueva versión disponible — notificar al usuario
+              showToast('Actualización disponible — recargá para aplicar','🔄');
+            }
+          });
+        });
+      })
+      .catch(err=>console.warn('[2SIS] SW no registrado:', err));
+  });
+}
+
+})();
+</script>
+</body>
+</html>

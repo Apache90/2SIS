@@ -5,7 +5,7 @@
 
 ARCHIVOS INCLUIDOS EN ESTE PAQUETE
 ───────────────────────────────────
-  2SIS.html       → La app completa (HTML + CSS + JS)
+  index.html       → La app completa (HTML + CSS + JS)
   manifest.json   → Configuración PWA (nombre, ícono, colores)
   sw.js           → Service worker (cache offline)
   README.txt      → Este archivo
@@ -52,7 +52,7 @@ PASO 2 — ESTRUCTURA FINAL DE ARCHIVOS
 Antes de subir, verificar que la carpeta tenga esta estructura:
 
   2sis-pwa/
-  ├── 2SIS.html
+  ├── index.html
   ├── manifest.json
   ├── sw.js
   └── icons/
@@ -77,7 +77,7 @@ PASO 3 — DEPLOY EN NETLIFY (5 minutos, GRATIS)
 6. ¡Listo! La PWA ya está online con HTTPS automático.
 
    URL a entregar a compradores en Gumroad:
-   https://TU-SITIO.netlify.app/2SIS.html
+   https://TU-SITIO.netlify.app/index.html
 
 
 PASO 4 — DOMINIO PERSONALIZADO (opcional, ~$12 USD/año)
@@ -99,7 +99,7 @@ PASO 5 — ACTUALIZAR LA APP EN EL FUTURO
 ─────────────────────────────────────────
 Cuando quieras subir una nueva versión (más fármacos, fixes, etc.):
 
-1. Editar el archivo 2SIS.html con los cambios
+1. Editar el archivo index.html con los cambios
 2. IMPORTANTE: En sw.js, cambiar la versión del cache:
    const CACHE_VERSION = '2sis-v1.0';
    →
@@ -135,7 +135,7 @@ PASO 7 — OFUSCACIÓN (antes de cada deploy a producción)
 Para proteger el código fuente:
 
 1. Ir a: https://obfuscator.io
-2. Pegar el bloque <script> del 2SIS.html
+2. Pegar el bloque <script> del index.html
 3. Configuración recomendada:
    - Compact: ON
    - Self Defending: ON
@@ -160,14 +160,14 @@ Configuración del producto Gumroad:
 - Tipo: Digital product
 - Precio: $18 USD
 - Archivo a entregar: un PDF o TXT con:
-  * Link a la PWA: https://TU-SITIO.netlify.app/2SIS.html
+  * Link a la PWA: https://TU-SITIO.netlify.app/index.html
   * Instrucciones de instalación (Android + iOS)
   * Contacto de soporte
 
 Email automático de Gumroad al comprador:
   "Gracias por tu compra de 2SIS Dosis Pediátrica.
    
-   Tu link de acceso: https://TU-SITIO.netlify.app/2SIS.html
+   Tu link de acceso: https://TU-SITIO.netlify.app/index.html
    
    Al abrir el link, el sistema te pedirá aceptar los términos
    de uso y registrar tu nombre de licencia.

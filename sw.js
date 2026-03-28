@@ -14,7 +14,7 @@ const CACHE_NAME = `2sis-cache-${CACHE_VERSION}`;
 
 // Assets a cachear en la instalación (app shell)
 const APP_SHELL = [
-  './2SIS.html',
+  './index.html',
   './manifest.json',
   // Google Fonts — se cachean en el primer request
   'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap',
@@ -31,7 +31,7 @@ self.addEventListener('install', event => {
         return cache.addAll(APP_SHELL).catch(err => {
           console.warn('[2SIS SW] Algunos assets no se pudieron cachear:', err);
           // Cachear solo el HTML si fallan los externos
-          return cache.add('./2SIS.html');
+          return cache.add('./index.html');
         });
       })
       .then(() => {
@@ -82,7 +82,7 @@ self.addEventListener('fetch', event => {
         })
         .catch(() => {
           // Sin red: servir desde cache
-          return caches.match('./2SIS.html');
+          return caches.match('./index.html');
         })
     );
     return;

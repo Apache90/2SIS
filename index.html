@@ -916,6 +916,189 @@ tag:'av',warn:'Puede causar náuseas y vómitos si se administra en ayunas. Admi
 fuentes:['WHO/UNICEF: Clinical Management of Acute Diarrhoea (2004, vigente)','WHO Model Formulary for Children (2010) — Zinc sulfate','Bhutta ZA et al. Meta-analysis. Lancet 2008;371:417']}
 ];
 
+const INSTRUCCIONES_PADRES = {
+  amoxicilina: [
+    'Dar cada 8 horas: mañana, mediodía y noche.',
+    'Se puede dar con o sin comida.',
+    'Guardar el jarabe en la heladera. Agitar bien antes de usar.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  amoxiclav: [
+    'Dar cada 8 horas siempre con comida — reduce la diarrea.',
+    'Guardar el jarabe en la heladera. Agitar bien antes de usar.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  azitromicina: [
+    'Dar una vez por día, siempre a la misma hora.',
+    'NO guardar en heladera — se cristaliza. Guardar a temperatura ambiente.',
+    'No dar junto con antiácidos (Maalox, leche de magnesia).',
+    'Completar los días indicados aunque el niño mejore.'
+  ],
+  claritromicina: [
+    'Dar cada 12 horas: mañana y noche.',
+    'Se puede dar con o sin comida.',
+    'Guardar el jarabe en la heladera. Agitar bien antes de usar.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  trimetoprim: [
+    'Dar cada 12 horas con abundante agua.',
+    'Guardar el jarabe en la heladera.',
+    'Asegurarse que el niño tome suficiente líquido durante el tratamiento.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  cefalexina: [
+    'Dar cada 6 a 8 horas según indicación.',
+    'Se puede dar con o sin comida.',
+    'Guardar el jarabe en la heladera. Agitar bien antes de usar.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  cefixima: [
+    'Dar cada 12 o 24 horas según indicación del médico.',
+    'Se puede dar con o sin comida.',
+    'Guardar el jarabe en la heladera. Agitar bien antes de usar.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  clindamicina: [
+    'Dar cada 6 a 8 horas con abundante agua.',
+    'No acostarse durante al menos 30 minutos después de tomar.',
+    'Se puede dar con comida si hay molestia de estómago.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  nitrofurantoina: [
+    'Dar cada 6 horas siempre con comida — reduce las náuseas.',
+    'Guardar el jarabe en la heladera.',
+    'Es normal que la orina tome color amarillo-marrón.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  metronidazol: [
+    'Dar cada 8 horas con o sin comida.',
+    'No dar bebidas con alcohol durante el tratamiento ni las 48 horas siguientes.',
+    'Atención: algunos jarabes para la tos contienen alcohol — consultar al médico.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  doxiciclina: [
+    'Dar cada 12 horas con abundante agua.',
+    'No acostarse durante al menos 30 minutos después de tomar.',
+    'No dar con leche, lácteos ni antiácidos.',
+    'Solo para mayores de 8 años.',
+    'Completar todos los días indicados aunque el niño mejore.'
+  ],
+  paracetamol: [
+    'Dar cada 4 a 6 horas solo si hay fiebre o dolor.',
+    'Máximo 5 veces en 24 horas.',
+    'No combinar con otros remedios que contengan paracetamol o acetaminofén.',
+    'Si la fiebre no cede en 48 horas, consultar al médico.'
+  ],
+  ibuprofeno: [
+    'Dar cada 6 a 8 horas siempre con comida o leche.',
+    'Máximo 4 veces en 24 horas.',
+    'No dar si el niño tiene varicela, dengue, o está deshidratado.',
+    'Si la fiebre no cede en 48 horas, consultar al médico.'
+  ],
+  diclofenac: [
+    'Dar cada 8 a 12 horas siempre con comida.',
+    'Solo para mayores de 6 años.',
+    'No dar con el estómago vacío.',
+    'Consultar al médico si aparece dolor de estómago o heces oscuras.'
+  ],
+  codeina: [
+    'Solo para mayores de 12 años.',
+    'Dar cada 4 a 6 horas solo si hay dolor.',
+    'Consultar al médico de inmediato si el niño tiene mucho sueño, respiración lenta o difícil.'
+  ],
+  salbutamol: [
+    'Usar exactamente con la frecuencia indicada.',
+    'Si usa aerocámara: agitar el inhalador, colocar en la cámara y hacer 4 a 6 respiraciones lentas.',
+    'Si el niño no mejora en 20 minutos o empeora, concurrir a guardia de inmediato.',
+    'Puede causar temblor leve y corazón acelerado — es normal con la nebulización.'
+  ],
+  bromuro: [
+    'Usar siempre junto con salbutamol, nunca solo.',
+    'Solo para crisis aguda — no usar como medicación diaria.',
+    'Si el niño no mejora, concurrir a guardia de inmediato.'
+  ],
+  prednisolona: [
+    'Dar una vez por día a la mañana, con el desayuno.',
+    'No suspender el medicamento solo sin consultar al médico.',
+    'Puede aumentar el apetito y el ánimo — es normal.',
+    'Completar todos los días indicados.'
+  ],
+  dexametasona: [
+    'Generalmente es una dosis única o pocos días según indicación.',
+    'Dar a la mañana con comida.',
+    'No suspender solo sin consultar al médico.',
+    'Puede aumentar el apetito — es normal.'
+  ],
+  cetirizina: [
+    'Dar una vez por día, preferentemente a la noche.',
+    'Se puede dar con o sin comida.',
+    'Puede causar algo de sueño en algunos niños.',
+    'No superar la dosis indicada.'
+  ],
+  loratadina: [
+    'Dar una vez por día, a la misma hora.',
+    'Se puede dar con o sin comida.',
+    'Generalmente no causa sueño.',
+    'No superar la dosis indicada.'
+  ],
+  mebendazol: [
+    'Puede masticarse o triturarse y mezclarse con comida.',
+    'Tratar a toda la familia al mismo tiempo, aunque no tengan síntomas.',
+    'Lavar la ropa de cama, toallas y ropa interior el día del tratamiento.',
+    'Cortar las uñas cortas y lavarse las manos frecuentemente.',
+    'Repetir la dosis a las 2 a 4 semanas según indicación.'
+  ],
+  albendazol: [
+    'Dar con comida que contenga algo de grasa — mejora la absorción.',
+    'Puede masticarse o triturarse.',
+    'Tratar a toda la familia al mismo tiempo.',
+    'Lavar la ropa de cama y ropa interior el día del tratamiento.',
+    'Repetir la dosis a las 2 semanas según indicación.'
+  ],
+  tinidazol: [
+    'Dar con comida para evitar náuseas.',
+    'No dar bebidas con alcohol durante el tratamiento ni las 72 horas siguientes.',
+    'Completar los días indicados aunque el niño mejore.'
+  ],
+  ivermectina: [
+    'Dar en ayunas con un vaso de agua.',
+    'No dar a niños menores de 15 kg.',
+    'En escabiosis: tratar a toda la familia al mismo tiempo.',
+    'Lavar la ropa de cama y ropa interior el día del tratamiento.',
+    'Repetir la dosis a los 14 días según indicación.'
+  ],
+  omeprazol: [
+    'Dar 30 minutos antes del desayuno.',
+    'Si es cápsula: se puede abrir y mezclar los gránulos con agua o jugo de naranja.',
+    'NO triturar ni masticar los gránulos — tragarlos enteros.',
+    'No suspender solo sin consultar al médico.'
+  ],
+  domperidona: [
+    'Dar 15 a 30 minutos antes de cada comida.',
+    'Máximo 3 veces por día.',
+    'No usar por más de 1 semana sin indicación médica.',
+    'Consultar al médico si el niño tiene palpitaciones o malestar en el pecho.'
+  ],
+  diazepam: [
+    'Solo usar si el médico lo indicó para convulsiones.',
+    'Via rectal: retirar el capuchón, lubricar la punta, insertar suavemente y comprimir.',
+    'Si la convulsión no cede en 5 a 10 minutos llamar al 107 o concurrir a guardia.',
+    'No repetir más de 2 veces sin atención médica.'
+  ],
+  vitamina_d: [
+    'Dar una vez por día con una comida.',
+    'Prestar atención a las unidades: gotas no es lo mismo que ml.',
+    'Usar el gotero o jeringa del frasco — no cucharas de cocina.',
+    'Se puede mezclar con un poco de leche materna o fórmula.'
+  ],
+  sulfato_zn: [
+    'Dar una vez por día con comida para evitar náuseas.',
+    'Separar al menos 2 horas de cualquier antibiótico.',
+    'Completar los 10 a 14 días indicados.',
+    'Guardar a temperatura ambiente, alejado de la humedad.'
+  ]
+};
+
 const BIBLIO=[
   {tag:'Nelson',txt:'Nelson Textbook of Pediatrics, 21ª ed. — Kliegman, Geme, Blum et al. Elsevier, 2020.'},
   {tag:'Lexicomp',txt:'Pediatric & Neonatal Dosage Handbook, 30ª ed. — Taketomo, Hodding, Kraus. Lexicomp / Wolters Kluwer, 2023.'},
@@ -941,6 +1124,7 @@ let S={medico:{nombre:'',especialidad:'',tel:''},logoData:null,paciente:{nombre:
 let catActiva='todos',searchQ='',farmActivoObj=null;
 let mostrarPresentacionesPDF=true;
 let mostrarFuentesPDF=true;
+let mostrarInstruccionesPDF=true;
 let farmSeleccionados=[],modoMulti=false;
 
 /* ══ INIT ══ */
@@ -1230,6 +1414,7 @@ function renderResultado(){
     });
     html+=`<div class="pdf-toggle-row"><div class="pdf-toggle-label">🧪 Incluir presentaciones en PDF <span>Suspensiones y comprimidos</span></div><label class="toggle-switch"><input type="checkbox" id="togglePresentaciones" ${mostrarPresentacionesPDF?'checked':''} onchange="mostrarPresentacionesPDF=this.checked"><div class="toggle-track"></div></label></div>`;
     html+=`<div class="pdf-toggle-row" style="margin-top:6px"><div class="pdf-toggle-label">📚 Incluir fuentes bibliográficas <span>Referencias al pie del PDF</span></div><label class="toggle-switch"><input type="checkbox" id="toggleFuentes" ${mostrarFuentesPDF?'checked':''} onchange="mostrarFuentesPDF=this.checked"><div class="toggle-track"></div></label></div>`;
+    html+=`<div class="pdf-toggle-row" style="margin-top:6px"><div class="pdf-toggle-label">👨‍👩‍👧 Instrucciones para padres <span>Lenguaje simple para el hogar</span></div><label class="toggle-switch"><input type="checkbox" id="toggleInstrucciones" ${mostrarInstruccionesPDF?'checked':''} onchange="mostrarInstruccionesPDF=this.checked"><div class="toggle-track"></div></label></div>`;
     html+=`<button class="btn-primary" onclick="exportPDF()">⬇ PDF con todos los fármacos</button>`;
     html+=`<button class="btn-secondary" onclick="guardarHistorialMulti()">💾 Guardar en historial</button>`;
     cont.innerHTML=html;return;
@@ -1289,6 +1474,10 @@ function renderResultado(){
     <div class="pdf-toggle-row" style="margin-top:6px">
       <div class="pdf-toggle-label">📚 Incluir fuentes bibliográficas <span>Referencias al pie del PDF</span></div>
       <label class="toggle-switch"><input type="checkbox" id="toggleFuentes" ${mostrarFuentesPDF?'checked':''} onchange="mostrarFuentesPDF=this.checked"><div class="toggle-track"></div></label>
+    </div>
+    <div class="pdf-toggle-row" style="margin-top:6px">
+      <div class="pdf-toggle-label">👨‍👩‍👧 Instrucciones para padres <span>Lenguaje simple para el hogar</span></div>
+      <label class="toggle-switch"><input type="checkbox" id="toggleInstrucciones" ${mostrarInstruccionesPDF?'checked':''} onchange="mostrarInstruccionesPDF=this.checked"><div class="toggle-track"></div></label>
     </div>
     <button class="btn-primary" onclick="exportPDF()">⬇ PDF para los padres</button>
     <button class="btn-secondary" onclick="guardarHistorial()">💾 Guardar en historial</button>
@@ -1369,6 +1558,8 @@ function exportPDF(){
   if(toggleEl)mostrarPresentacionesPDF=toggleEl.checked;
   const toggleFuentes=document.getElementById('toggleFuentes');
   if(toggleFuentes)mostrarFuentesPDF=toggleFuentes.checked;
+  const toggleInstr=document.getElementById('toggleInstrucciones');
+  if(toggleInstr)mostrarInstruccionesPDF=toggleInstr.checked;
   const btn=document.querySelector('#panel-resultado .btn-primary');
   if(btn){btn.classList.add('loading');btn.textContent='⏳ Generando PDF…';}
   if(modoMulti&&farmSeleccionados.length>0){
@@ -1467,6 +1658,27 @@ function drawDrugBlock(doc,f,peso,y,idx,showIdx,PW,PH,M,CW,C,showPres){
   }
   if(f.nota){y+=3;if(y>PH-25){doc.addPage();y=14;}const nl=doc.splitTextToSize(ct(f.nota),CW-12);const nH=nl.length*4.8+9;doc.setFillColor(...C.amberL);doc.roundedRect(M,y,CW,nH,1.5,1.5,'F');doc.setFillColor(...C.amber);doc.rect(M,y,2,nH,'F');doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...C.amber);doc.text('NOTA CLINICA',M+5,y+6);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(82,60,4);nl.forEach((l,i)=>doc.text(l,M+5,y+11+i*4.8));y+=nH+2;}
   if(f.warn){y+=2;if(y>PH-25){doc.addPage();y=14;}const wl=doc.splitTextToSize(ct(f.warn),CW-12);const wH=wl.length*4.8+9;doc.setFillColor(...C.redL);doc.roundedRect(M,y,CW,wH,1.5,1.5,'F');doc.setFillColor(...C.red);doc.rect(M,y,2,wH,'F');doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...C.red);doc.text('ADVERTENCIA',M+5,y+6);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(102,24,24);wl.forEach((l,i)=>doc.text(l,M+5,y+11+i*4.8));y+=wH+2;}
+  if(mostrarInstruccionesPDF){
+    const instrPadres = INSTRUCCIONES_PADRES[f.id];
+    if(instrPadres && instrPadres.length > 0){
+      y+=3;
+      if(y>PH-40){doc.addPage();y=14;}
+      const ipH = instrPadres.length*5.8+12;
+      doc.setFillColor(232,244,255);
+      doc.roundedRect(M,y,CW,ipH,1.5,1.5,'F');
+      doc.setFillColor(14,108,78);
+      doc.rect(M,y,2,ipH,'F');
+      doc.setFontSize(6.5);doc.setFont('helvetica','bold');
+      doc.setTextColor(14,108,78);
+      doc.text('INSTRUCCIONES PARA LOS PADRES',M+5,y+7);
+      doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+      doc.setTextColor(16,20,36);
+      instrPadres.forEach((linea,i)=>{
+        doc.text('• '+ct(linea),M+5,y+13+i*5.8);
+      });
+      y+=ipH+2;
+    }
+  }
   y+=4;doc.setDrawColor(...C.border);doc.setLineWidth(0.4);doc.line(M,y,PW-M,y);return y+3;
 }
 

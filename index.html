@@ -1566,16 +1566,18 @@ function renderTerminosInfo(){
 function getLicensee(){try{return JSON.parse(localStorage.getItem(LK)||'{}');}catch(e){return {};}}
 window.getLicensee=getLicensee;
 
-// Lista de emails con licencia activa — agregar emails de compradores aquí
-const LICENSED_EMAILS=[
-  // 'doctor@ejemplo.com',
-];
-
-function checkLicense(email){
+async function checkLicense(email){
   if(!email) return {valid:false};
-  const normalized=email.trim().toLowerCase();
-  const valid=LICENSED_EMAILS.map(e=>e.toLowerCase()).includes(normalized);
-  return {valid};
+  try{
+    const res=await fetch('https://2sis-api.emirvalles90.workers.dev/validate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email.trim().toLowerCase()})
+    });
+    return await res.json();
+  }catch(e){
+    return {valid:false,error:'Sin conexión. Verificá tu internet e intentá de nuevo.'};
+  }
 }
 
 window.showActForm=function(){
@@ -1590,8 +1592,8 @@ window.activateApp=function(){
   if(!email){document.getElementById('actEmail').style.borderColor='var(--red)';document.getElementById('actEmail').focus();return;}
   const btn=document.getElementById('actBtn');
   btn.textContent='Verificando...';btn.disabled=true;
-  setTimeout(()=>{
-    const result=checkLicense(email);
+  setTimeout(async()=>{
+    const result=await checkLicense(email);
     if(!result.valid){
       btn.textContent='✓ Registrar mi licencia';btn.disabled=false;
       document.getElementById('actForm').style.display='none';

@@ -1173,9 +1173,15 @@ function recalcActivo(){if(farmActivoObj||farmSeleccionados.length)renderResulta
 window.recalcActivo=recalcActivo;
 
 function calcDrugBlock(f,peso){
-  const dosMin=+(f.dosis.min*peso).toFixed(1);const dosMax=+(f.dosis.max*peso).toFixed(1);
-  const dosMin2=Math.min(dosMin,f.maxDosis);const dosMax2=Math.min(dosMax,f.maxDosis);
-  const isDosis=f.unidad.includes('/dosis');const limitadoMax=dosMax>f.maxDosis;
+  const isDosis=f.unidad.includes('/dosis');
+  const dosMin=+(f.dosis.min*peso).toFixed(1);
+  const dosMax=+(f.dosis.max*peso).toFixed(1);
+  const limiteMax = isDosis
+    ? f.maxDosis
+    : (f.maxDiario || f.maxDosis);
+  const dosMin2=Math.min(dosMin, limiteMax);
+  const dosMax2=Math.min(dosMax, limiteMax);
+  const limitadoMax=dosMax > limiteMax;
   const dosisMostrar=dosMin2===dosMax2?fmtNum(dosMin2):`${fmtNum(dosMin2)}–${fmtNum(dosMax2)}`;
   const presHTML=f.presentaciones.map(p=>{
     let c='';
@@ -1184,7 +1190,7 @@ function calcDrugBlock(f,peso){
     else{c=`${dosisMostrar} ${p.forma}`;}
     return `<div class="pres-item"><div class="pres-icon">💉</div><div class="pres-body"><div class="pres-name">${escH(p.nombre)}</div><div class="pres-conc">${escH(p.marca||'')}</div></div><div class="pres-calc">${escH(c)}</div></div>`;
   }).join('');
-  return {dosMin2,dosMax2,dosisMostrar,presHTML,warnHTML:f.warn?`<div class="result-warn">⚠️ ${escH(f.warn)}</div>`:'',maxHTML:limitadoMax?`<div class="result-max">🔴 Dosis limitada al máximo: ${fmtNum(f.maxDosis)} mg/dosis</div>`:'',unidadLabel:f.unidad};
+  return {dosMin2,dosMax2,dosisMostrar,presHTML,warnHTML:f.warn?`<div class="result-warn">⚠️ ${escH(f.warn)}</div>`:'',maxHTML:limitadoMax?`<div class="result-max">🔴 Dosis limitada al máximo: ${fmtNum(limiteMax)} mg${isDosis?'/dosis':'/día'}</div>`:'',unidadLabel:f.unidad};
 }
 
 function edadWarnHTML(f){
@@ -1233,9 +1239,15 @@ function renderResultado(){
   if(!f){cont.innerHTML='<div class="empty-state"><div class="empty-icon">💊</div><p>Seleccioná un fármaco en la pestaña <strong>Fármacos</strong>.</p></div>';return;}
   if(!peso||peso<=0){cont.innerHTML='<div class="empty-state"><div class="empty-icon">⚖️</div><p>Ingresá el <strong>peso del paciente</strong> en la pestaña Paciente para calcular la dosis.</p></div>';return;}
 
-  const dosMin=+(f.dosis.min*peso).toFixed(1);const dosMax=+(f.dosis.max*peso).toFixed(1);
-  const dosMin2=Math.min(dosMin,f.maxDosis);const dosMax2=Math.min(dosMax,f.maxDosis);
-  const isDosis=f.unidad.includes('/dosis');const limitadoMax=dosMax>f.maxDosis;
+  const isDosis=f.unidad.includes('/dosis');
+  const dosMin=+(f.dosis.min*peso).toFixed(1);
+  const dosMax=+(f.dosis.max*peso).toFixed(1);
+  const limiteMax = isDosis
+    ? f.maxDosis
+    : (f.maxDiario || f.maxDosis);
+  const dosMin2=Math.min(dosMin, limiteMax);
+  const dosMax2=Math.min(dosMax, limiteMax);
+  const limitadoMax=dosMax > limiteMax;
   const dosisMostrar=dosMin2===dosMax2?fmtNum(dosMin2):`${fmtNum(dosMin2)}–${fmtNum(dosMax2)}`;
   const presHTML=f.presentaciones.map(p=>{
     let c='';
@@ -1253,7 +1265,7 @@ function renderResultado(){
       <div class="result-meta">${escH(f.unidad)} · Peso: ${fmtNum(peso)} kg<br>Rango: ${fmtNum(f.dosis.min)}–${fmtNum(f.dosis.max)} mg/kg</div>
       <div class="result-freq">${escH(f.freq)}</div>
       ${f.warn?`<div class="result-warn">⚠️ ${escH(f.warn)}</div>`:''}
-      ${limitadoMax?`<div class="result-max">🔴 Dosis limitada al máximo: ${fmtNum(f.maxDosis)} mg/dosis</div>`:''}
+      ${limitadoMax?`<div class="result-max">🔴 Dosis limitada al máximo: ${fmtNum(limiteMax)} mg${isDosis?'/dosis':'/día'}</div>`:''}
       ${f.nota?`<div style="font-size:.72rem;color:var(--muted);margin-top:10px;line-height:1.55;border-top:1px solid var(--border2);padding-top:8px">📌 ${escH(f.nota)}</div>`:''}
       <div class="revision-tag">✓ Revisado ${f.ultima_revision||'2026-03'} · Triple verificación bibliográfica</div>
     </div>
@@ -1409,9 +1421,15 @@ function drawPatientCard(doc,pac,peso,y,PW,M,CW,C){
 function drawDrugBlock(doc,f,peso,y,idx,showIdx,PW,PH,M,CW,C,showPres){
   if(y>PH-50){doc.addPage();y=14;}
   const RP=PW-M-3;
-  const dosMin=+(f.dosis.min*peso).toFixed(1);const dosMax=+(f.dosis.max*peso).toFixed(1);
-  const dosMin2=Math.min(dosMin,f.maxDosis);const dosMax2=Math.min(dosMax,f.maxDosis);
-  const limitadoMax=dosMax>f.maxDosis;
+  const isDosisBlock=f.unidad.includes('/dosis');
+  const dosMin=+(f.dosis.min*peso).toFixed(1);
+  const dosMax=+(f.dosis.max*peso).toFixed(1);
+  const limiteMaxBlock = isDosisBlock
+    ? f.maxDosis
+    : (f.maxDiario || f.maxDosis);
+  const dosMin2=Math.min(dosMin, limiteMaxBlock);
+  const dosMax2=Math.min(dosMax, limiteMaxBlock);
+  const limitadoMax=dosMax > limiteMaxBlock;
   const dosisMgStr=dosMin2===dosMax2?`${fmtNum(dosMin2)} mg`:`${fmtNum(dosMin2)}-${fmtNum(dosMax2)} mg`;
   y+=5;
   doc.setFillColor(...C.dark);doc.roundedRect(M,y,CW,9,1.5,1.5,'F');
@@ -1428,7 +1446,7 @@ function drawDrugBlock(doc,f,peso,y,idx,showIdx,PW,PH,M,CW,C,showPres){
   doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(...C.green);
   freqLines.forEach((l,i)=>doc.text(l,RP,y+5+i*6,{align:'right'}));
   y+=10;
-  if(limitadoMax){doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...C.red);doc.text(`Max: ${fmtNum(f.maxDosis)} mg/dosis`,RP,y+5,{align:'right'});}
+  if(limitadoMax){doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...C.red);doc.text(`Max: ${fmtNum(limiteMaxBlock)} mg${isDosisBlock?'/dosis':'/dia'}`,RP,y+5,{align:'right'});}
   if(showPres&&f.presentaciones.length>0){
     y+=2;
     doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(...C.muted);doc.text('PRESENTACIONES COMERCIALES:',M,y+5);

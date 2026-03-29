@@ -405,7 +405,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <p style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:20px">Tu nombre quedará registrado en todos los PDFs que generes. Licencia de <strong style="color:var(--text)">uso personal exclusivo.</strong></p>
       <div style="margin-bottom:12px">
         <label style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Nombre completo *</label>
-        <input type="text" id="actNombre" placeholder="Dr. Juan García" style="width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none"/>
+        <input type="text" id="actNombre" placeholder="Dr. Emir Segovia" style="width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none"/>
       </div>
       <div style="margin-bottom:20px">
         <label style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Email de licencia *</label>
@@ -940,6 +940,7 @@ const CATS=[
 let S={medico:{nombre:'',especialidad:'',tel:''},logoData:null,paciente:{nombre:'',fechaNac:'',edad:'',sexo:'',peso:''},farmActivo:null,historial:[]};
 let catActiva='todos',searchQ='',farmActivoObj=null;
 let mostrarPresentacionesPDF=true;
+let mostrarFuentesPDF=true;
 let farmSeleccionados=[],modoMulti=false;
 
 /* ══ INIT ══ */
@@ -1222,6 +1223,7 @@ function renderResultado(){
       </div>`;
     });
     html+=`<div class="pdf-toggle-row"><div class="pdf-toggle-label">🧪 Incluir presentaciones en PDF <span>Suspensiones y comprimidos</span></div><label class="toggle-switch"><input type="checkbox" id="togglePresentaciones" ${mostrarPresentacionesPDF?'checked':''} onchange="mostrarPresentacionesPDF=this.checked"><div class="toggle-track"></div></label></div>`;
+    html+=`<div class="pdf-toggle-row" style="margin-top:6px"><div class="pdf-toggle-label">📚 Incluir fuentes bibliográficas <span>Referencias al pie del PDF</span></div><label class="toggle-switch"><input type="checkbox" id="toggleFuentes" ${mostrarFuentesPDF?'checked':''} onchange="mostrarFuentesPDF=this.checked"><div class="toggle-track"></div></label></div>`;
     html+=`<button class="btn-primary" onclick="exportPDF()">⬇ PDF con todos los fármacos</button>`;
     html+=`<button class="btn-secondary" onclick="guardarHistorialMulti()">💾 Guardar en historial</button>`;
     cont.innerHTML=html;return;
@@ -1271,6 +1273,10 @@ function renderResultado(){
     <div class="pdf-toggle-row">
       <div class="pdf-toggle-label">🧪 Incluir presentaciones en PDF <span>Suspensiones y comprimidos</span></div>
       <label class="toggle-switch"><input type="checkbox" id="togglePresentaciones" ${mostrarPresentacionesPDF?'checked':''} onchange="mostrarPresentacionesPDF=this.checked"><div class="toggle-track"></div></label>
+    </div>
+    <div class="pdf-toggle-row" style="margin-top:6px">
+      <div class="pdf-toggle-label">📚 Incluir fuentes bibliográficas <span>Referencias al pie del PDF</span></div>
+      <label class="toggle-switch"><input type="checkbox" id="toggleFuentes" ${mostrarFuentesPDF?'checked':''} onchange="mostrarFuentesPDF=this.checked"><div class="toggle-track"></div></label>
     </div>
     <button class="btn-primary" onclick="exportPDF()">⬇ PDF para los padres</button>
     <button class="btn-secondary" onclick="guardarHistorial()">💾 Guardar en historial</button>
@@ -1349,6 +1355,8 @@ function exportPDF(){
   if(!peso){showToast('Ingresá el peso del paciente','⚠️');switchTab('paciente');return;}
   const toggleEl=document.getElementById('togglePresentaciones');
   if(toggleEl)mostrarPresentacionesPDF=toggleEl.checked;
+  const toggleFuentes=document.getElementById('toggleFuentes');
+  if(toggleFuentes)mostrarFuentesPDF=toggleFuentes.checked;
   const btn=document.querySelector('#panel-resultado .btn-primary');
   if(btn){btn.classList.add('loading');btn.textContent='⏳ Generando PDF…';}
   if(modoMulti&&farmSeleccionados.length>0){
@@ -1423,7 +1431,7 @@ function drawDrugBlock(doc,f,peso,y,idx,showIdx,PW,PH,M,CW,C,showPres){
   if(limitadoMax){doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...C.red);doc.text(`Max: ${fmtNum(f.maxDosis)} mg/dosis`,RP,y+5,{align:'right'});}
   if(showPres&&f.presentaciones.length>0){
     y+=2;
-    doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(...C.muted);doc.text('COMO PREPARAR:',M,y+5);
+    doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(...C.muted);doc.text('PRESENTACIONES COMERCIALES:',M,y+5);
     doc.setDrawColor(...C.border);doc.setLineWidth(0.3);doc.line(M+34,y+3,RP,y+3);
     y+=7;
     f.presentaciones.forEach((p,pi)=>{
@@ -1487,7 +1495,7 @@ function buildPDF(f,peso,pac,med,logoData){
   y=drawPatientCard(doc,pac,peso,y,PW,M,CW,C);
   y=drawDrugBlock(doc,f,peso,y,0,false,PW,PH,M,CW,C,mostrarPresentacionesPDF);
   y=drawDisclaimer(doc,y,PW,M,CW,C);
-  y=drawFuentesPDF(doc,f.fuentes,y,PW,PH,M,CW,C);
+  if(mostrarFuentesPDF)y=drawFuentesPDF(doc,f.fuentes,y,PW,PH,M,CW,C);
   drawPDFFooter(doc,med,fechaStr,lic,PH,PW,M,C);
   const fn=`2SIS_${ct(f.nombre||'farmaco').replace(/[^a-z0-9]/gi,'_').slice(0,18)}_${ct(pac.nombre||'pac').replace(/[^a-z0-9]/gi,'_').slice(0,12)}_${Date.now().toString().slice(-5)}.pdf`;
   doc.save(fn);showToast('PDF descargado','📄');
@@ -1506,7 +1514,7 @@ function buildMultiPDF(farms,peso,pac,med,logoData){
   y=drawDisclaimer(doc,y,PW,M,CW,C);
   // Fuentes consolidadas sin duplicados
   const allFuentes=[...new Set(farms.flatMap(f=>f.fuentes||[]))];
-  y=drawFuentesPDF(doc,allFuentes,y,PW,PH,M,CW,C);
+  if(mostrarFuentesPDF)y=drawFuentesPDF(doc,allFuentes,y,PW,PH,M,CW,C);
   drawPDFFooter(doc,med,fechaStr,lic,PH,PW,M,C);
   const fn=`2SIS_multi_${ct(pac.nombre||'pac').replace(/[^a-z0-9]/gi,'_').slice(0,12)}_${Date.now().toString().slice(-5)}.pdf`;
   doc.save(fn);showToast(`PDF con ${farms.length} farmacos descargado`,'📄');
